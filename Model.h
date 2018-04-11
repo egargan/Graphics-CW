@@ -2,7 +2,7 @@
 #ifndef COURSEWORK_MODEL_H
 #define COURSEWORK_MODEL_H
 
-#include <vector>
+#include <glut/glut.h>
 
 class Model {
 
@@ -11,12 +11,11 @@ protected:
 public:
 
     // '= 0' makes pure virtual function, i.e. an abstract class member function
-
-    virtual void Model() = 0;
-    virtual void ~Model() = 0;
+    //Model();
+    //~Model();
 
     /** Render model. **/
-    virtual void display() = 0;
+    virtual void draw() = 0;
 
     /** Update model position by a single 'tick'. */
     virtual void update() = 0;
