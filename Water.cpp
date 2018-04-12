@@ -45,8 +45,8 @@ void Water::update() {
     for (int x = 0; x < gridsize; x++) {
         for (int y = 0; y < gridsize; y++) {
 
-            // '2' == number of perlin noise samples
-            mesh[x][y] = octaveNoise(x, y, time, 2) * tilelength * amplitude;
+            // '3' == number of perlin noise samples
+            mesh[x][y] = octaveNoise(x, y, time, 3) * tilelength * amplitude;
         }
     }
 
@@ -71,14 +71,19 @@ void Water::draw() {
 
     Vec3f temp = Vec3f();
 
+
+    // Push new attribute state for lighting properties
+    glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
+
+    // Prep. material lighting attributes for mesh polys
+    materialise((float[]){0.f, 0.2f, 1.f, 1.f},       // Ambient colour
+                (float[]){0.2f, 0.3f, 0.6f, 1.f},     // Diffuse
+                (float[]){0.8f, 0.8f, 0.8f, 1.f});    // Specular
+
+    glPushMatrix();
+
     // Translate to far NW corner of mesh
     glTranslatef(-gridwidth*tilelength, 0.f, -gridwidth*tilelength);
-
-    glPushAttrib(GL_SPECULAR & GL_DIFFUSE & GL_AMBIENT & GL_SHININESS);
-
-    materialise((float[]){0.f, 0.2f, 1.f, 1.f},  // Ambient
-                (float[]){1.f, 1.f, 1.f, 1.f},   // Diffuse
-                (float[]){1.f, 1.f, 1.f, 1.f});  // Specular
 
     // Iterate over grid
     for (int x = 0; x < gridsize-1; x++, glTranslatef(tilelength, 0.f, (-gridsize + 1)*tilelength)) {
@@ -92,30 +97,30 @@ void Water::draw() {
 
             glBegin(GL_TRIANGLES);
 
-            glColor3f(0.f, 0.1f, 0.8f);
-
             temp = cross(points[1]-points[0], points[2]-points[0]);
+            temp /= temp.magnitude();
+
             glNormal3f(temp.x, temp.y, temp.z);
 
             glVertex3f(points[0].x, points[0].y, points[0].z);
             glVertex3f(points[1].x, points[1].y, points[1].z);
             glVertex3f(points[2].x, points[2].y, points[2].z);
 
-            temp = cross(points[3]-points[2], points[3]-points[2]);
-            glNormal3f(temp.x, temp.y, temp.z);
+            temp = cross(points[3]-points[2], points[0]-points[2]);
+            temp /= temp.magnitude(); // OpenGL expects unit normal vectors, so we / by magnitude
 
-            glColor3f(0.f, 0.05f, 0.7f);
+            glNormal3f(temp.x, temp.y, temp.z);
 
             glVertex3f(points[2].x, points[2].y, points[2].z);
             glVertex3f(points[3].x, points[3].y, points[3].z);
             glVertex3f(points[0].x, points[0].y, points[0].z);
 
             glEnd();
-
         }
     }
 
     glPopAttrib();
+    glPopMatrix();
 
 }
 

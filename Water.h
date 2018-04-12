@@ -22,10 +22,10 @@ class Water : Model {
     float time = 0.f;
 
     /** Change in time counter per update(). */
-    const float dtime = 0.009f;
+    const float dtime = 0.004f;
 
     /** Amplitude, i.e. height, of water waves. */
-    const float amplitude = 0.5f;
+    const float amplitude = 0.6f;
 
 
 public:

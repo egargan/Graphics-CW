@@ -73,7 +73,6 @@ struct Vec3 {
         return (Vec3<T>(lhs) /= rhs);
     }
 
-
     inline friend Vec3<T> cross(Vec3<T> const& lhs, Vec3<T> const& rhs) {
 
         return (Vec3<T>{
@@ -107,7 +106,7 @@ struct Vec3 {
 
     /** Returns magnitude of vector. */
     T magnitude() {
-        return sqrt(x^2 + y^2 + z^2);
+        return sqrt(x*x + y*y + z*z);
     }
 
 };

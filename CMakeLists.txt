@@ -10,7 +10,7 @@ find_package(GLUT REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS})
 
 # Declare the var 'SOURCE_FILES', and give it all relevant source filenames
-set(SOURCE_FILES boilerplate.h Scene.cpp Model.h Water.cpp Water.h perlin.h)
+set(SOURCE_FILES boilerplate.h Scene.cpp Model.h Water.cpp Water.h perlin.h Vec3.h Utility.h)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
