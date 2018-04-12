@@ -16,9 +16,9 @@ void draw() {
     glEnable(GL_CULL_FACE);
     //glEnable(GL_LIGHTING);
 
-    gluLookAt(  0.f, 1.f, 2.f,
-                0.f, 0.f, 0.f,
-                0.f, 1.f, 0.f );  // Camera oriented upwards
+    gluLookAt(  0.f, 5.f, 20.f,    // Camera postition
+                0.f, 0.f, 0.f,    // 'Look-at' position
+                0.f, 1.f, 0.f );  // Orientation (unit vector) of 'top' of camera
 
     wart->draw();
     wart->update();
@@ -35,7 +35,7 @@ void init() {
 
 int main(int argc, char **argv) {
 
-    wart = new Water(30);
+    wart = new Water(10);
 
     glutInit(&argc, argv);          // Initialise GL environment
     setup();                        // Call additional initialisation commands

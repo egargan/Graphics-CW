@@ -6,41 +6,52 @@
 #include "perlin.h"
 
 #include <iostream>
-#include <limits>
 
 
-Water::Water(int size) {
+/**
+ * Constructor -- creates water mesh of 'n' unit tiles.
+ * @param meshlength    Mesh side length.
+ * */
+Water::Water(int meshlength) : Water(1.f, meshlength) {
 
-    wavegrid = std::vector<std::vector<float>>((size_t)size, std::vector<float>((size_t)size, 0));
+    // Delegated constructors can only be called in initialization list ^.
+
+}
+
+/**
+ * @param tilesize      Side length of individual mesh cell / tile.
+ * @param meshlength    Number of tiles across one length of square, i.e. meshsize * tilesize = length of mesh.
+ */
+Water::Water(float _tilelength, int meshlength) : tilelength{_tilelength} {
+
+    mesh = std::vector<std::vector<float>>((size_t)meshlength, std::vector<float>((size_t)meshlength, 0));
 
 }
 
 Water::~Water() {
 
-    wavegrid.clear();
+    mesh.clear();
 
 }
 
-float z = 0.f;
-
 void Water::update() {
 
-    const auto gridsize = (int) wavegrid.size();
+    const auto gridsize = (int) mesh.size();
 
     // Iterate over grid
     for (int x = 0; x < gridsize; x++) {
         for (int y = 0; y < gridsize; y++) {
 
-            wavegrid[x][y] = octaveNoise(x, y, z, 3)*0.05f;
+            mesh[x][y] = (float)(octaveNoise(x, y, time, 2) * (tilelength * 0.5));
         }
     }
 
     // Check that z doesn't exceed float limit, in case we leave our program for *a while*.
-    // Finding an interval for z, e.g. resetting every z == 5, would create periodicity in water animation -- bad!
-    if (z < std::numeric_limits<float>::max()) {
-        z += 0.003f;
+    // Finding an interval for z, e.g. resetting every z == 1, would create periodicity in water animation -- bad!
+    if (time < std::numeric_limits<float>::max() - 1.f) {
+        time += dtime;
     } else {
-        z = 0.f;
+        time = 0.f;
     }
 
 
@@ -48,38 +59,33 @@ void Water::update() {
 
 void Water::draw() {
 
-    const auto gridsize = (int) wavegrid.size();
+    const auto gridsize = (int) mesh.size();
     const auto gridwidth = gridsize / 2;
 
-    glTranslatef(-gridwidth * 0.1f, 0.f, -gridwidth*0.1f);
+    glTranslatef(-gridwidth*tilelength, 0.f, -gridwidth*tilelength);
 
     // Iterate over grid
-    for (int x = 0; x < gridsize-1; x++) {
-        for (int z = 0; z < gridsize-1; z++) {
+    for (int x = 0; x < gridsize-1; x++, glTranslatef(tilelength, 0.f, (-gridsize + 1)*tilelength)) {
+        for (int z = 0; z < gridsize-1; z++, glTranslatef(0.f, 0.f, tilelength)) {
 
             glBegin(GL_TRIANGLES);
 
             glColor3f(0.f, 0.1f, 0.8f);
 
-            glVertex3f(0.f,  wavegrid[x][z]    , 0.f);
-            glVertex3f(0.f,  wavegrid[x][z+1]  , 0.1f);
-            glVertex3f(0.1f, wavegrid[x+1][z+1], 0.1f);
+            glVertex3f(0.f,  mesh[x][z]    , 0.f);
+            glVertex3f(0.f,  mesh[x][z+1]  , tilelength);
+            glVertex3f(tilelength, mesh[x+1][z+1], tilelength);
 
             glColor3f(0.f, 0.05f, 0.7f);
 
-            glVertex3f(0.1f, wavegrid[x+1][z+1], 0.1f);
-            glVertex3f(0.1f, wavegrid[x+1][z], 0.f);
-            glVertex3f(0.f,  wavegrid[x][z], 0.f);
+            glVertex3f(tilelength, mesh[x+1][z+1], tilelength);
+            glVertex3f(tilelength, mesh[x+1][z], 0.f);
+            glVertex3f(0.f,  mesh[x][z], 0.f);
 
             glEnd();
-//
-            glTranslatef(0.f, 0.f, 0.1f);
 
         }
-        glTranslatef(0.1f, 0.f, -gridsize * 0.1f + 0.1f);
     }
-
-
 
 }
 
