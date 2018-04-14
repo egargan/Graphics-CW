@@ -22,15 +22,5 @@ inline void materialise(float amb[], float dif[], float spec[])  {
 }
 
 
-inline float* normalrgb(int r, int g, int b) {
-
-    return (float[]){(float)r / 255,
-                     (float)g / 255,
-                     (float)b / 255};
-
-}
-
-
-
 
 #endif //GRAPHICS_CW_UTILITY_H

@@ -3,7 +3,6 @@
 //
 
 #include "Water.h"
-#include "Vec3.h"
 #include "perlin.h"
 
 #include "Utility.h"
@@ -61,7 +60,7 @@ void Water::update() {
 
 }
 
-void Water::draw() {
+void Water::draw() const {
 
     const auto gridsize = (int) mesh.size();
     const auto gridwidth = gridsize / 2;
@@ -71,14 +70,13 @@ void Water::draw() {
 
     Vec3f temp = Vec3f();
 
-
     // Push new attribute state for lighting properties
     glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
 
     // Prep. material lighting attributes for mesh polys
-    materialise((float[]){0.f, 0.2f, 1.f, 1.f},       // Ambient colour
-                (float[]){0.2f, 0.3f, 0.6f, 1.f},     // Diffuse
-                (float[]){0.8f, 0.8f, 0.8f, 1.f});    // Specular
+    materialise((float[]){0.05f, 0.3f, 0.8f, 1.f},       // Ambient colour
+                (float[]){0.f, 0.3f, 0.6f, 1.f},     // Diffuse
+                (float[]){1.f, 1.f, 1.f, 1.f});    // Specular
 
     glPushMatrix();
 
@@ -98,7 +96,7 @@ void Water::draw() {
             glBegin(GL_TRIANGLES);
 
             temp = cross(points[1]-points[0], points[2]-points[0]);
-            temp /= temp.magnitude();
+            temp /= temp.magnitude(); // OpenGL expects unit normal vectors, so we / by magnitude
 
             glNormal3f(temp.x, temp.y, temp.z);
 
@@ -107,7 +105,7 @@ void Water::draw() {
             glVertex3f(points[2].x, points[2].y, points[2].z);
 
             temp = cross(points[3]-points[2], points[0]-points[2]);
-            temp /= temp.magnitude(); // OpenGL expects unit normal vectors, so we / by magnitude
+            temp /= temp.magnitude();
 
             glNormal3f(temp.x, temp.y, temp.z);
 
@@ -122,6 +120,22 @@ void Water::draw() {
     glPopAttrib();
     glPopMatrix();
 
+}
+
+Vec3f Water::getSurfaceNormal(const int x1, const int z1,
+                              const int x2, const int z2,
+                              const int x3, const int z3) const {
+
+    Vec3f temp = cross(Vec3f{(float)x2, mesh[x2][z2], (float)z2} - Vec3f{(float)x1, mesh[x1][z1], (float)z1},
+                       Vec3f{(float)x3, mesh[x3][z3], (float)z3} - Vec3f{(float)x1, mesh[x1][z1], (float)z1});
+
+    return temp /= temp.magnitude();
+
+}
+
+float Water::getMeshY(const int x, const int z) const {
+
+    return mesh[x][z];
 }
 
 

@@ -2,9 +2,12 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 #include "boilerplate.h"
+
 #include "Water.h"
+#include "FloatingModel.h"
 
 Water* wart;
+FloatingModel* box;
 
 void makeLight(float pos[], GLenum lr) {
 
@@ -12,7 +15,7 @@ void makeLight(float pos[], GLenum lr) {
     //glLightf(lr, GL_SPOT_EXPONENT, 8.f);
     //glLightf(lr, GL_SPOT_CUTOFF, 45.f);
 
-    glLightfv(lr, GL_DIFFUSE,  (float[]){240/255.f, 207/255.f, 135/255.f});
+    glLightfv(lr, GL_DIFFUSE,  (float[]){160/255.f, 160/255.f, 160/255.f});
     glLightfv(lr, GL_SPECULAR, (float[]){240/255.f, 207/255.f, 135/255.f});
 
     glLightfv(lr, GL_POSITION, (GLfloat[]){pos[0], pos[1], pos[2]});
@@ -20,14 +23,11 @@ void makeLight(float pos[], GLenum lr) {
     glEnable(lr);
 
 }
-
-float rot = 0.f;
-
 void draw() {
 
     glLoadIdentity();
 
-    glClearColor(0.1f, 0.2f, 0.3f, 1.f);
+    glClearColor(0.2f, 0.4f, 0.8f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_CULL_FACE);
@@ -37,30 +37,43 @@ void draw() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    gluLookAt(  0.f, 10.f, 35.f,  // Camera postition
+    gluLookAt(  4.f, 10.f, 35.f,  // Camera postition
                 0.f, 0.f, 0.f,    // 'Look-at' position
                 0.f, 1.f, 0.f );  // Orientation (unit vector) of 'top' of camera
 
-    wart->draw();
+
     wart->update();
+    wart->draw();
 
-    //glRotatef(rot+=0.5, 1.f, 0.f, 0.f);
+    makeLight((float[]) {0.f, 10.f, -30.f}, GL_LIGHT0);
 
-    makeLight((float[]) {0.f, 10.f, -20.f}, GL_LIGHT0);
 
     glDisable(GL_LIGHTING);
 
-    glTranslatef(0.f, 10.f, -20.f);
+    glTranslatef(0.f, 10.f, -30.f);
     glutSolidSphere(1.2, 10, 10);   // Draw ball at light source
+    glTranslatef(0.f, -10.f, 30.f);
+
+    box->update();
+    box->draw();
+
+
 
     glutSwapBuffers(); // Swap double buffers
 
 }
 
+void init() {
+
+    // Init models
+
+    wart = new Water(1.f, 100);
+
+    box = new FloatingModel(wart, Vec3f{-3.f, 0.f, -2.f}, 3, 3);
+}
+
 
 int main(int argc, char **argv) {
-
-    wart = new Water(0.5f,100);
 
     glutInit(&argc, argv);          // Initialise GL environment
     setup();                        // Call additional initialisation commands
@@ -70,8 +83,11 @@ int main(int argc, char **argv) {
 
     checkGLError();                 // Check any OpenGL errors in initialisation
 
+    init();
+
     glutReshapeFunc(reshape);
     glutMainLoop();                 // Begin rendering sequence
+
 
     return 0;
 

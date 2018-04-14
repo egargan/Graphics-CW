@@ -25,7 +25,7 @@ class Water : Model {
     const float dtime = 0.004f;
 
     /** Amplitude, i.e. height, of water waves. */
-    const float amplitude = 0.6f;
+    const float amplitude = 0.7f;
 
 
 public:
@@ -41,8 +41,19 @@ public:
     /** Animates water by one tick. */
     void update();
 
-    void draw();
+    void draw() const;
 
+
+    /** Returns a surface normal of the triangle described by 3 points on the water's surface. */
+    Vec3f getSurfaceNormal(int, int, int, int, int, int) const;
+
+    /** Returns Y-displacement at given mesh coordinates. */
+    float getMeshY(int x, int z) const;
+
+
+    float getTileLength() const { return tilelength; }
+
+    int getMeshLength() const { return (int) mesh.size(); }
 
 };
 
