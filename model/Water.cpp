@@ -3,9 +3,9 @@
 //
 
 #include "Water.h"
-#include "perlin.h"
+#include "../perlin.h"
 
-#include "Utility.h"
+#include "../Utility.h"
 
 #include <iostream>
 

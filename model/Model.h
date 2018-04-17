@@ -2,8 +2,8 @@
 #ifndef COURSEWORK_MODEL_H
 #define COURSEWORK_MODEL_H
 
-#include <glut/glut.h>
-#include "Vec3.h"
+#include <GLUT/glut.h>
+#include "../Vec3.h"
 
 class Model {
 

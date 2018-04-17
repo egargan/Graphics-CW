@@ -9,7 +9,9 @@
 
 #include "Water.h"
 
-class FloatingModel : Model {
+class FloatingModel : public Model {
+
+protected:
 
     /** Rotation angles about X and Z axis used for model's 'bobbing' animation. */
     float rotX, rotZ;
@@ -23,8 +25,6 @@ class FloatingModel : Model {
     /** 3 sets of water mesh coordinates describing triangle that approximates contact area. */
     int contactPoints[6];
 
-public:
-
     FloatingModel(Water* water, Vec3f _location, float _width, float _length) :
             Model(_location),
             surface{water}, width{_width}, length{_length}, rotX{0.f}, rotZ{0.f}, contactPoints{0}
@@ -33,6 +33,8 @@ public:
 
         update(); // Get initial orientation.
     };
+
+public:
 
     /** Update orientation vector based on y-displacement of 3 points approximating the contact area with water. */
     void update() override {
@@ -53,16 +55,16 @@ public:
 
     }
 
-    void draw() const override {
+    /** Performs transformations to position model ready for rendering. */
+    void doTransform() const {
 
         glTranslatef(location.x, location.y * 2, location.z);
 
         glRotatef(rotX, 1.f, 0.f, 0.f);
         glRotatef(rotZ, 0.f, 0.f, 1.f);
 
-        // Placeholder object for now
-        glutSolidCube(width);
     }
+
 
     /** Populates contact points array according to model position.
      *

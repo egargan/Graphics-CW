@@ -25,7 +25,7 @@ class Water : Model {
     const float dtime = 0.004f;
 
     /** Amplitude, i.e. height, of water waves. */
-    const float amplitude = 0.7f;
+    const float amplitude = 0.8f;
 
 
 public:

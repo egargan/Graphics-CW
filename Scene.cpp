@@ -3,11 +3,12 @@
 
 #include "boilerplate.h"
 
-#include "Water.h"
-#include "FloatingModel.h"
+#include "model/Water.h"
+#include "model/FloatingModel.h"
+#include "model/Crate.h"
 
 Water* wart;
-FloatingModel* box;
+Crate* box;
 
 void makeLight(float pos[], GLenum lr) {
 
@@ -58,7 +59,6 @@ void draw() {
     box->draw();
 
 
-
     glutSwapBuffers(); // Swap double buffers
 
 }
@@ -67,9 +67,10 @@ void init() {
 
     // Init models
 
-    wart = new Water(1.f, 100);
+    // TODO: seg fault for small tile size, perhaps FloatingModel getting mesh indices outside bounds?
+    wart = new Water(0.5f, 100);
 
-    box = new FloatingModel(wart, Vec3f{-3.f, 0.f, -2.f}, 3, 3);
+    box = new Crate(wart, Vec3f{-3.f, 0.f, -2.f}, 4, 4);
 }
 
 
