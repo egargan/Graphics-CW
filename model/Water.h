@@ -5,6 +5,7 @@
 #ifndef GRAPHICS_CW_WATER_H
 #define GRAPHICS_CW_WATER_H
 
+
 #include "Model.h"
 
 #include <vector>
@@ -25,7 +26,7 @@ class Water : Model {
     const float dtime = 0.004f;
 
     /** Amplitude, i.e. height, of water waves. */
-    const float amplitude = 0.8f;
+    const float amplitude = 0.6f;
 
 
 public:

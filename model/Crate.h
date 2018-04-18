@@ -6,12 +6,15 @@
 #define GRAPHICS_CW_CRATE_H
 
 #include "FloatingModel.h"
+#include "../Utility.h"
 
 class Crate : public FloatingModel {
 
+    unsigned int textureID;
+
 public:
 
-    Crate(Water* water, Vec3f _location, float _width, float _length);
+    Crate(Water* water, Vec3f _location, float _width);
 
     void draw() const;
 

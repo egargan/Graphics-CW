@@ -2,13 +2,13 @@
 // Created by Edward Gargan on 10/04/2018.
 //
 
-#include "Water.h"
-#include "../perlin.h"
 
+#include "Water.h"
+
+#include "../perlin.h"
 #include "../Utility.h"
 
 #include <iostream>
-
 
 /**
  * Constructor -- creates water mesh of 'n' unit tiles.
@@ -76,7 +76,8 @@ void Water::draw() const {
     // Prep. material lighting attributes for mesh polys
     materialise((float[]){0.05f, 0.3f, 0.8f, 1.f},       // Ambient colour
                 (float[]){0.f, 0.3f, 0.6f, 1.f},     // Diffuse
-                (float[]){1.f, 1.f, 1.f, 1.f});    // Specular
+                (float[]){1.f, 1.f, 1.f, 1.f},
+                128.f);    // Specular
 
     glPushMatrix();
 

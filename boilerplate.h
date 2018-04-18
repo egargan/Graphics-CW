@@ -7,9 +7,9 @@
 
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-#include "boilerplate.h"
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
 
-#include <glut/glut.h>
 #include <cstdio>
 
 int height, width;

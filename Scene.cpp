@@ -2,13 +2,13 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 #include "boilerplate.h"
-
 #include "model/Water.h"
-#include "model/FloatingModel.h"
 #include "model/Crate.h"
+
 
 Water* wart;
 Crate* box;
+
 
 void makeLight(float pos[], GLenum lr) {
 
@@ -16,14 +16,16 @@ void makeLight(float pos[], GLenum lr) {
     //glLightf(lr, GL_SPOT_EXPONENT, 8.f);
     //glLightf(lr, GL_SPOT_CUTOFF, 45.f);
 
-    glLightfv(lr, GL_DIFFUSE,  (float[]){160/255.f, 160/255.f, 160/255.f});
-    glLightfv(lr, GL_SPECULAR, (float[]){240/255.f, 207/255.f, 135/255.f});
+    glLightfv(lr, GL_DIFFUSE,  (float[]) {160/255.f, 160/255.f, 160/255.f});
+    glLightfv(lr, GL_SPECULAR, (float[]) {240/255.f, 207/255.f, 135/255.f});
 
     glLightfv(lr, GL_POSITION, (GLfloat[]){pos[0], pos[1], pos[2]});
 
     glEnable(lr);
 
 }
+
+
 void draw() {
 
     glLoadIdentity();
@@ -38,39 +40,44 @@ void draw() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    gluLookAt(  4.f, 10.f, 35.f,  // Camera postition
-                0.f, 0.f, 0.f,    // 'Look-at' position
-                0.f, 1.f, 0.f );  // Orientation (unit vector) of 'top' of camera
+    gluLookAt(  4.f, 15.f, 60.f,  // Camera postition
+                0.f,  0.f, 0.f,    // 'Look-at' position
+                0.f,  1.f, 0.f );  // Orientation (unit vector) of 'top' of camera
 
 
     wart->update();
     wart->draw();
 
-    makeLight((float[]) {0.f, 10.f, -30.f}, GL_LIGHT0);
+    box->update();
+    box->draw();
 
+
+    makeLight((float[]) {0.f, 10.f, -50.f}, GL_LIGHT0);
 
     glDisable(GL_LIGHTING);
 
-    glTranslatef(0.f, 10.f, -30.f);
-    glutSolidSphere(1.2, 10, 10);   // Draw ball at light source
-    glTranslatef(0.f, -10.f, 30.f);
+    glPushMatrix();
 
-    box->update();
-    box->draw();
+    glTranslatef(0.f, 10.f, -50.f);
+    glutSolidSphere(1.2, 10, 10);   // Draw ball at light source
+
+    glPopMatrix();
 
 
     glutSwapBuffers(); // Swap double buffers
 
 }
 
+
 void init() {
 
-    // Init models
+    // Init models + textures
 
     // TODO: seg fault for small tile size, perhaps FloatingModel getting mesh indices outside bounds?
-    wart = new Water(0.5f, 100);
+    wart = new Water(1.0f, 100);
 
-    box = new Crate(wart, Vec3f{-3.f, 0.f, -2.f}, 4, 4);
+    box = new Crate(wart, Vec3f{-5.f, 0.f, 12.f}, 3);
+
 }
 
 

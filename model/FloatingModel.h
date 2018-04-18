@@ -5,8 +5,6 @@
 #ifndef GRAPHICS_CW_FLOATINGMODEL_H
 #define GRAPHICS_CW_FLOATINGMODEL_H
 
-#include "Model.h"
-
 #include "Water.h"
 
 class FloatingModel : public Model {
@@ -37,7 +35,7 @@ protected:
 public:
 
     /** Update orientation vector based on y-displacement of 3 points approximating the contact area with water. */
-    void update() override {
+    inline void update() override {
 
         Vec3f orientation = surface->getSurfaceNormal(
                 contactPoints[0], contactPoints[1],
@@ -56,8 +54,9 @@ public:
     }
 
     /** Performs transformations to position model ready for rendering. */
-    void doTransform() const {
+    inline void doTransform() const {
 
+        // '* 2' exaggerates bob
         glTranslatef(location.x, location.y * 2, location.z);
 
         glRotatef(rotX, 1.f, 0.f, 0.f);
@@ -73,7 +72,7 @@ public:
      *  (assuming the model is level with the water's surface).
      *
      *  Should be called when model location changes across water's plane, e.g. in the x / z directions.*/
-    void updateContactPoints() {
+    inline void updateContactPoints() {
 
         const float tilelen = surface->getTileLength();
         const float halflen = tilelen / 2;

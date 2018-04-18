@@ -6,21 +6,15 @@
 #define GRAPHICS_CW_UTILITY_H
 
 #include <glut/glut.h>
+#include <string>
+#include <cstdio>
 
 /** Calls gl methods to setup a surface that reflects light -- make sure to push + pop attribs either side!  */
-inline void materialise(float amb[], float dif[], float spec[])  {
+void materialise(float amb[], float dif[], float spec[], float shine);
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
-
-    glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
-
-
-    // TODO: look at shininess as parameter, necessary??
-
-}
-
+/** Reads BMP file at given path and binds image data to returned texture ID.
+ * @return Texture ID of loaded texture.*/
+int loadBMP(const std::string& path);
 
 
 #endif //GRAPHICS_CW_UTILITY_H
