@@ -74,10 +74,10 @@ void Water::draw() const {
     glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
 
     // Prep. material lighting attributes for mesh polys
-    materialise((float[]){0.05f, 0.3f, 0.8f, 1.f},       // Ambient colour
+    materialise((float[]){0.05f, 0.3f, 0.8f, 1.f},   // Ambient colour
                 (float[]){0.f, 0.3f, 0.6f, 1.f},     // Diffuse
-                (float[]){1.f, 1.f, 1.f, 1.f},
-                128.f);    // Specular
+                (float[]){1.f, 1.f, 1.f, 1.f},       // Specular
+                128.f);                              // Shininess
 
     glPushMatrix();
 

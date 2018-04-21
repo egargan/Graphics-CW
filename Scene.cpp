@@ -40,7 +40,7 @@ void draw() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    gluLookAt(  4.f, 15.f, 60.f,  // Camera postition
+    gluLookAt(  4.f, 15.f, 60.f,   // Camera postition
                 0.f,  0.f, 0.f,    // 'Look-at' position
                 0.f,  1.f, 0.f );  // Orientation (unit vector) of 'top' of camera
 
@@ -74,7 +74,7 @@ void init() {
     // Init models + textures
 
     // TODO: seg fault for small tile size, perhaps FloatingModel getting mesh indices outside bounds?
-    wart = new Water(1.0f, 100);
+    wart = new Water(1.2f, 100);
 
     box = new Crate(wart, Vec3f{-5.f, 0.f, 12.f}, 3);
 
