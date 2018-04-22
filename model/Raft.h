@@ -22,6 +22,7 @@ class Raft : public FloatingModel {
     // Private draw methods for component shapes.
     void drawCylinder(float radius, float length) const;
     void drawSail() const;
+    void drawLamp() const;
 
 public:
 

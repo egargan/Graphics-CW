@@ -23,9 +23,12 @@ protected:
     /** 3 sets of water mesh coordinates describing triangle that approximates contact area. */
     int contactPoints[6];
 
+    /** 'Bob' displacement of model on water layer. */
+    float bob;
+
     FloatingModel(Water* water, Vec3f _location, float _width, float _length) :
             Model(_location),
-            surface{water}, width{_width}, length{_length}, rotX{0.f}, rotZ{0.f}, contactPoints{0}
+            surface{water}, width{_width}, length{_length}, rotX{0.f}, rotZ{0.f}, contactPoints{0}, bob{0.f}
     {
         updateContactPoints(); // Get initial points of contact with water
 
@@ -43,13 +46,13 @@ public:
                 contactPoints[4], contactPoints[5]);
 
         // TODO: this isn't right! need to get X and Z rotations that map (0,1,0) to orientation vector.
-        rotX = atan2(orientation.y, orientation.x) * (180/M_PI);
-        rotZ = atan2(orientation.y, orientation.z) * (180/M_PI);
+        rotX = 90 - atan2(orientation.y, orientation.x) * (180/M_PI);
+        rotZ = 90 - atan2(orientation.y, orientation.z) * (180/M_PI);
 
         // Get average of contact points' Y components
-        location.y = (surface->getMeshY(contactPoints[0],contactPoints[1]),
-                      surface->getMeshY(contactPoints[2],contactPoints[3]),
-                      surface->getMeshY(contactPoints[4],contactPoints[5])) / 3;
+        bob =  (surface->getMeshY(contactPoints[0],contactPoints[1]),
+                surface->getMeshY(contactPoints[2],contactPoints[3]),
+                surface->getMeshY(contactPoints[4],contactPoints[5])) / 3;
 
     }
 
@@ -57,7 +60,7 @@ public:
     inline void doTransform() const {
 
         // '* 2' exaggerates bob
-        glTranslatef(location.x, location.y * 2, location.z);
+        glTranslatef(location.x, location.y + (bob * 2), location.z);
 
         glRotatef(rotX, 1.f, 0.f, 0.f);
         glRotatef(rotZ, 0.f, 0.f, 1.f);

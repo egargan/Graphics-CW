@@ -4,10 +4,12 @@
 #include "boilerplate.h"
 #include "model/Water.h"
 #include "model/Crate.h"
+#include "model/Raft.h"
 
 
 Water* wart;
 Crate* box;
+Raft* raft;
 
 
 void makeLight(float pos[], GLenum lr) {
@@ -19,7 +21,7 @@ void makeLight(float pos[], GLenum lr) {
     glLightfv(lr, GL_DIFFUSE,  (float[]) {160/255.f, 160/255.f, 160/255.f});
     glLightfv(lr, GL_SPECULAR, (float[]) {240/255.f, 207/255.f, 135/255.f});
 
-    glLightfv(lr, GL_POSITION, (GLfloat[]){pos[0], pos[1], pos[2]});
+    glLightfv(lr, GL_POSITION, (GLfloat[]) {pos[0], pos[1], pos[2]});
 
     glEnable(lr);
 
@@ -51,6 +53,9 @@ void draw() {
     box->update();
     box->draw();
 
+    raft->update();
+    raft->draw();
+
 
     makeLight((float[]) {0.f, 10.f, -50.f}, GL_LIGHT0);
 
@@ -77,6 +82,8 @@ void init() {
     wart = new Water(1.2f, 100);
 
     box = new Crate(wart, Vec3f{-5.f, 0.f, 12.f}, 3);
+
+    raft = new Raft(wart, Vec3f{7.f, 2.f, 12.f}, 10, 10, 7);
 
 }
 
