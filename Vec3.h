@@ -22,7 +22,7 @@ struct Vec3 {
     T x, y, z;
 
     /** Self plus vector addition. */
-    Vec3& operator+=(Vec3<T> const& rhs) {
+    inline Vec3& operator+=(Vec3<T> const& rhs) {
         x += rhs.x;
         y += rhs.y;
         z += rhs.z;
@@ -73,8 +73,8 @@ struct Vec3 {
         return (Vec3<T>(lhs) /= rhs);
     }
 
+    /** Vector by vector cross product. */
     inline friend Vec3<T> cross(Vec3<T> const& lhs, Vec3<T> const& rhs) {
-
         return (Vec3<T>{
                 lhs.y * rhs.z - lhs.z * rhs.y,
                 lhs.z * rhs.x - lhs.x * rhs.z,
@@ -107,6 +107,10 @@ struct Vec3 {
     /** Returns magnitude of vector. */
     T magnitude() {
         return sqrt(x*x + y*y + z*z);
+    }
+
+    void print() const {
+        printf("{%f, %f, %f}\n", x, y, z);
     }
 
 };

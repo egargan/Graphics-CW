@@ -12,7 +12,7 @@
 
 #include <cstdio>
 
-int height, width;
+int windowheight, windowwidth;
 
 void checkGLError() {
 
@@ -28,22 +28,23 @@ void checkGLError() {
 
 void setup() {
 
-    width = 800;                                    // initialise global window variables
-    height = 800;                                   // define in your header: int width, height;
+    windowwidth = 900;                                    // initialise global window variables
+    windowheight = 800;                                   // define in your header: int width, height;
 
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE);  // enable 3D rendering and double buffering
-    glutInitWindowSize(width, height);              // set window size
+    glutInitWindowSize(windowwidth, windowheight);              // set window size
+
     glutCreateWindow("Coursework");                 // create and show window (named MyScene)
 
 }
 
 void reshape(int _width, int _height) {
 
-    height = _height;
-    width = _width;
+    windowheight = _height;
+    windowwidth = _width;
 
     // Get new aspect ratio
-    GLdouble aspect = static_cast<GLdouble>(width) / static_cast<GLdouble>(height);
+    GLdouble aspect = static_cast<GLdouble>(windowwidth) / static_cast<GLdouble>(windowheight);
 
     glMatrixMode(GL_PROJECTION);
 

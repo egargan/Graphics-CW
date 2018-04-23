@@ -7,11 +7,12 @@
 /** Calls gl methods to setup a surface that reflects light -- make sure to push + pop attribs either side!  */
 void materialise(float amb[], float dif[], float spec[], float shine)  {
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+    // Allow null values
+    if (amb != nullptr)     glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
+    if (dif != nullptr)     glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
+    if (spec != nullptr)    glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+    if (shine != NULL)      glMaterialf(GL_FRONT, GL_SHININESS, shine);
 
-    glMaterialf(GL_FRONT, GL_SHININESS, shine);
 }
 
 int loadBMP(const std::string& path) {
@@ -95,6 +96,25 @@ int loadBMP(const std::string& path) {
     delete[] data;
 
     return texObject;
+}
+
+
+
+void makeLight(float pos[], GLenum lr) {
+
+    //glLightfv(lr, GL_SPOT_DIRECTION, (float[]){0.f, 0.f, 1.f});
+    //glLightf(lr, GL_SPOT_EXPONENT, 16.f);
+    //glLightf(lr, GL_SPOT_CUTOFF, 180.f);
+
+    //glLightfv(lr, GL_AMBIENT,  (float[]) {240/255.f, 207/255.f, 135/255.f});
+    glLightfv(lr, GL_DIFFUSE,  (float[]) {160/255.f, 160/255.f, 160/255.f});
+    glLightfv(lr, GL_SPECULAR, (float[]) {240/255.f, 207/255.f, 135/255.f});
+    //glLightfv(lr, GL_SPECULAR, (float[]) {0.f, 0.f, 0.f});
+
+    glLightfv(lr, GL_POSITION, (GLfloat[]) {pos[0], pos[1], pos[2], 1.f}); // 1.0f == directed light
+
+    glEnable(lr);
+
 }
 
 

@@ -8,6 +8,7 @@
 #include <glut/glut.h>
 #include <string>
 #include <cstdio>
+#include "Vec3.h"
 
 /** Calls gl methods to setup a surface that reflects light -- make sure to push + pop attribs either side!  */
 void materialise(float amb[], float dif[], float spec[], float shine);
@@ -16,5 +17,7 @@ void materialise(float amb[], float dif[], float spec[], float shine);
  * @return Texture ID of loaded texture.*/
 int loadBMP(const std::string& path);
 
+/** Calls lighting methods for given light index (e.g. GL_LIGHT0) at given position. */
+void makeLight(float pos[], GLenum lr);
 
 #endif //GRAPHICS_CW_UTILITY_H

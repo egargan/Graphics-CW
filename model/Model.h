@@ -14,7 +14,7 @@ protected:
 public:
 
     /** Constructs model at given location. */
-    explicit Model(Vec3f _location) : location{_location} { printf("%f, %f, %f\n",location.x, location.y, location.z);};
+    explicit Model(Vec3f _location) : location{_location} {};
 
     /** Default constructor -- assumes location at (0, 0, 0). */
     Model() : location{Vec3f()} {};
