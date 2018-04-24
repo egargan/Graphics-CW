@@ -90,7 +90,6 @@ struct Vec3 {
             case 0 : return x;
             case 1 : return y;
             case 2 : return z;
-            default : return (T)0;
         }
     }
 
@@ -100,7 +99,6 @@ struct Vec3 {
             case 0 : return x;
             case 1 : return y;
             case 2 : return z;
-            default : return (T)0;
         }
     }
 

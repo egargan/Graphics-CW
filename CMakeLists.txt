@@ -12,7 +12,7 @@ include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS})
 # Declare the var 'SOURCE_FILES', and give it all relevant source filenames
 set(SOURCE_FILES boilerplate.h Scene.cpp model/Model.h model/Water.cpp model/Water.h
         perlin.h Vec3.h Utility.h
-        model/FloatingModel.h model/Crate.cpp model/Crate.h Utility.cpp model/Raft.cpp model/Raft.h)
+        model/FloatingModel.h model/Crate.cpp model/Crate.h Utility.cpp model/Raft.cpp model/Raft.h model/allmodels.h)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

@@ -8,59 +8,89 @@
 Raft::Raft(Water *water, Vec3f _location, float _width, float _length, float height) :
         FloatingModel(water, _location, _width, _length), mastHeight{height} {
 
-    // TODO: maybe size logs according to raft width and height, e.g. few chunky logs if raft is extra long?
+    // TODO: maybe size logs according to raft width and height, e.g. fewer chunky logs if raft is extra long?
 
-    // logs will be approximately this size, adjusted slightly to exactly fit width
-    const float idealw = 1.5f;
+    // logs will be approximately (double) this size, adjusted slightly to exactly fit width
+    const float idealrad = 0.6f;
+    const float idealgap = idealrad / 5.f;
 
-    baseLogRadius = (idealw + (fmod(width, idealw) / (floor(width / idealw)))) / 2.f;
+    baseLogRadius = (idealrad + (fmod(width, idealrad) / (floor(width / idealrad))));
 
-    numBaseLogs =  (int) std::round(width / baseLogRadius);
+    numBaseLogs =  (int) std::round(width / ((baseLogRadius * 2) + idealgap));
+
+    //baseLogRadius --
+
+    //printf("width: %f, op: %f", width, (numBaseLogs * baseLogRadius * 2) + (loggap * (numBaseLogs - 1)));
+
+    // Populate log colours array, one colour per log
+
+    baseLogColours = new int[numBaseLogs] {0};
+
+    srand(30);
+
+    for (int i = 0; i < numBaseLogs; i++) {
+        baseLogColours[i] = rand() % (int) browns.size();
+    }
 
 }
 
-void Raft::drawCylinder(float radius, float length) const {
+void Raft::drawLog(float radius, float length, Vec3f colr) const {
 
-    int res = 20; // Number of quads comprising cylinder
+    int res = 8; // Number of quads comprising cylinder
 
-    float period = (float) (M_PI * 2) / res;
-    float x, z;
+    float period = (float) (M_PI * 2) / res; // Increment of draw rotation, i.e. full rotation / res
+    float x, y;
 
-    glBegin(GL_TRIANGLE_FAN); // 'Top' lid for cylinder
+    Vec3f norm{}; // Surface normal holder
 
-    glVertex3f(0.f, 0.f, 0.f); // Centre of 'triangle fan'
-    glNormal3f(0.f, -1.f, 0.f);
-
-    for (int t = 0; t <= res; t++) {
-        glVertex3f(radius * sin(t * period), 0.f, radius * cos(t * period));
-    }
-
-    glEnd();
-
+    materialise((float[]) {colr.x, colr.y, colr.z, 1.f},     // Ambient colour
+                (float[]) {colr.x, colr.y, colr.z, 1.f},     // Diffuse
+                (float[]) {colr.x, colr.y, colr.z, 1.f},     // Specular
+                1.f);                                     // Shininess
 
     glBegin(GL_QUAD_STRIP); // Cylinder length
 
     for (int t = 0; t <= res; t++) {
 
-        x = radius * cos(t * period);
-        z = radius * sin(t * period);
+        x = radius * sin(t * period);
+        y = radius * cos(t * period);
 
-        glNormal3f(cos((t+0.5f) * period), 0.f, sin((t+0.5f) * period));
+        norm = {sin((t+0.5f) * period), cos((t+0.5f) * period), 0.f};
+        norm /= norm.magnitude();
 
-        glVertex3f(x, 0.f, z);
-        glVertex3f(x, length, z);
+        glNormal3f(norm.x, norm.y, norm.z);
+
+        glVertex3f(x, y, 0.f);
+        glVertex3f(x, y, length);
     }
 
     glEnd();
 
 
-    glBegin(GL_TRIANGLE_FAN); // Bottom lid
+    glBegin(GL_TRIANGLE_FAN); // 'Far' lid for cylinder
 
-    glVertex3f(0.f, length, 0.f);
-    glNormal3f(0.f, 1.f, 0.f);
+    // Make end of logs slightly lighter than log 'bark'
+    materialise((float[]) {colr.x + 0.35f, colr.y + 0.25f, colr.z + 0.1f, 1.f},
+                (float[]) {colr.x + 0.55f, colr.y + 0.45f, colr.z + 0.3f, 1.f},
+                nullptr,
+                0.4f);
+
+    glNormal3f(0.f, 0.f, -1.f);
+    glVertex3f(0.f, 0.f, 0.f); // Centre of triangle fan
 
     for (int t = 0; t <= res; t++) {
-        glVertex3f(radius * sin(t * period), length, radius * cos(t * period));
+        glVertex3f(radius * sin(t * period), radius * cos(t * period), 0.f);
+    }
+
+    glEnd();
+
+    glBegin(GL_TRIANGLE_FAN); // Closer lid
+
+    glNormal3f(0.f, 0.f, 1.f);
+    glVertex3f(0.f, 0.f, length);
+
+    for (int t = res; t >= 0; t--) {
+        glVertex3f(radius * sin(t * period), radius * cos(t * period), length);
     }
 
     glEnd();
@@ -74,34 +104,41 @@ void Raft::draw() const {
 
     // Push new attribute state for lighting properties
     glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
-
-    //float goodbrown[] = {0.31f, 0.24f, 0.19f, 1.f};
-
-    // Prep. material lighting attributes for mesh polys
-    materialise((float[]){0.2f, 0.17f, 0.15f, 1.f},     // Ambient colour
-                (float[]){0.31f, 0.24f, 0.19f, 1.f},    // Diffuse
-                (float[]){0.1f, 0.8f, 0.1f, 1.f},       // Specular
-                20.f);                                  // Shininess
-
     glPushMatrix();
 
     doTransform();
 
+    glPushMatrix(); // Push central position of raft
+
     // Translate to far NW corner of mesh
     glTranslatef(-halfwidth, 0.f, -halflength);
 
-    for (int i = 0; i < numBaseLogs; i++, glTranslatef(baseLogRadius * 2, 0.f, 0.f)) {
+    // TODO: add a bit of fixed random variation to log length + position + radius (further than just adding color vals!)
 
-        // TODO: change drawCylinder() to draw logs across x/z
+    for (int i = 0; i < numBaseLogs; i++, glTranslatef(baseLogRadius * 2.f + baseLogGap, 0.f, 0.f)) {
 
-        drawCylinder(baseLogRadius, length);
+        Vec3f col = browns[baseLogColours[i]];
+
+        glPushMatrix();
+
+            glTranslatef(0.f, 0.f, ((col.x - 0.2f) * 5)); // Add slight random value to size and Z
+
+            drawLog(baseLogRadius + col.z, length + col.x * 4, col);
+
+        glPopMatrix();
     }
 
     glPopMatrix();
 
-    // draw upwards cylinder
+
+    glRotatef(-91, 1.f, 0.f, 0.f);
+
+    drawLog(baseLogRadius - baseLogRadius / 10.f, mastHeight, browns[baseLogColours[1]]);
 
 
+
+
+    glPopMatrix();
     glPopAttrib();
 
 }

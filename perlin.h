@@ -5,6 +5,8 @@
 #ifndef GRAPHICS_CW_PERLIN_H
 #define GRAPHICS_CW_PERLIN_H
 
+#include "Utility.h"
+
     // Perlin noise algorithm adapted from,
     // http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf#page=8
 
@@ -58,10 +60,6 @@
 
     inline float dot(const int* g, float x, float y, float z) {
         return g[0] * x + g[1] * y + g[2] * z;
-    }
-
-    inline float lerp(float a, float b, float t) {
-        return (1 - t) * a + t * b;
     }
 
     inline float fade(float t) {
