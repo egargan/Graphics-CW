@@ -7,7 +7,7 @@
 Crate::Crate(Water *water, Vec3f _location, float _width) :
         FloatingModel(water, _location, _width, _width) {
 
-    textureID = (unsigned int) loadBMP("../textures/planks_oak.bmp");
+    textureID = (unsigned int) loadBMP("../textures/plank_32x32.bmp");
 
 }
 

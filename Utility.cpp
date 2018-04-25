@@ -11,7 +11,7 @@ void materialise(float amb[], float dif[], float spec[], float shine)  {
     if (amb != nullptr)     glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
     if (dif != nullptr)     glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
     if (spec != nullptr)    glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
-    if (shine != 0.0)      glMaterialf(GL_FRONT, GL_SHININESS, shine);
+    if (shine != 0.0)       glMaterialf(GL_FRONT, GL_SHININESS, shine);
 
 }
 
