@@ -15,111 +15,112 @@ Crate::Crate(Water *water, Vec3f _location, float _width) :
 
 void Crate::draw() const {
 
-    glPushMatrix();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-    // Transform to crate location + rotate
-    doTransform();
-
     const float halfwidth = width / 2.f;
 
-    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
 
-    glBindTexture(GL_TEXTURE_2D, textureID);
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-    // 'GL_MODULATE' multiples light color by texture color
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        // Transform to crate location + rotate
+        doTransform();
 
-    // Give material lighting properties that combine with texture
-    materialise((float[]){0.7f, 0.7f, 0.7f, 1.f},
-                (float[]){0.7f, 0.7f, 0.7f, 1.f},
-                (float[]){0.3f, 0.3f, 0.3f, 1.f},
-                1.f);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glBegin(GL_QUADS);
+        // 'GL_MODULATE' multiples light color by texture color
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    // Front face
-    glNormal3f(0.0f, 0.0f, 1.0f);
+        // Give material lighting properties that combine with texture
+        materialise((float[]){0.7f, 0.7f, 0.7f, 1.f},
+                    (float[]){0.7f, 0.7f, 0.7f, 1.f},
+                    (float[]){0.3f, 0.3f, 0.3f, 1.f},
+                    1.f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-halfwidth, halfwidth, halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-halfwidth, -halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(halfwidth, -halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(halfwidth, halfwidth, halfwidth);
+        glBegin(GL_QUADS);
 
-    // Back face
-    glNormal3f(0.0f, 0.0f, -1.0f);
+            // Front face
+            glNormal3f(0.0f, 0.0f, 1.0f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(halfwidth, halfwidth, -halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f(-halfwidth, halfwidth, halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(-halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(halfwidth, halfwidth, halfwidth);
 
-    // Left face
-    glNormal3f(-1.0f, 0.0f, 0.0f);
+            // Back face
+            glNormal3f(0.0f, 0.0f, -1.0f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-halfwidth, halfwidth, -halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-halfwidth, -halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-halfwidth, halfwidth, halfwidth);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f(halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(-halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(-halfwidth, halfwidth, -halfwidth);
 
-    // Right face
-    glNormal3f(1.0f, 0.0f, 0.0f);
+            // Left face
+            glNormal3f(-1.0f, 0.0f, 0.0f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(halfwidth, halfwidth, halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(halfwidth, -halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f(-halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(-halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(-halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(-halfwidth, halfwidth, halfwidth);
 
-    // Top face
-    glNormal3f(0.0f, 1.0f, 0.0f);
+            // Right face
+            glNormal3f(1.0f, 0.0f, 0.0f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-halfwidth, halfwidth, -halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-halfwidth, halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(halfwidth, halfwidth, halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f(halfwidth, halfwidth, halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(halfwidth, halfwidth, -halfwidth);
 
-    // Bottom face
-    glNormal3f(0.0f, -1.0f, 0.0f);
+            // Top face
+            glNormal3f(0.0f, 1.0f, 0.0f);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f  (-halfwidth, -halfwidth, halfwidth);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(halfwidth, -halfwidth, -halfwidth);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f(-halfwidth, halfwidth, -halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(-halfwidth, halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(halfwidth, halfwidth, halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(halfwidth, halfwidth, -halfwidth);
 
-    glEnd();
+            // Bottom face
+            glNormal3f(0.0f, -1.0f, 0.0f);
+
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex3f  (-halfwidth, -halfwidth, halfwidth);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex3f(-halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex3f(halfwidth, -halfwidth, -halfwidth);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex3f(halfwidth, -halfwidth, halfwidth);
+
+        glEnd();
 
 
-    // Bind to the NULL texture buffer
-    glBindTexture(GL_TEXTURE_2D, (GLuint) NULL);
+        // Bind to the NULL texture buffer
+        glBindTexture(GL_TEXTURE_2D, (GLuint) NULL);
 
-    glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
+
+        glPopAttrib();
 
     glPopMatrix();
-    glPopAttrib();
 
 }
 

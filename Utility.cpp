@@ -15,6 +15,12 @@ void materialise(float amb[], float dif[], float spec[], float shine)  {
 
 }
 
+
+/** Reads BMP file at given path and binds image data to returned texture ID.
+ *
+ *  @param path  Relative path to .bmp image.
+ *  @return  Texture ID of loaded texture.
+ *  */
 int loadBMP(const std::string& path) {
 
     // Data read from the header of the BMP file
@@ -58,6 +64,7 @@ int loadBMP(const std::string& path) {
     // Create a buffer
     auto data = new unsigned char[imageSize];
 
+    // TODO: remove
     //printf("width %i, height %i, imageSize %i, colord %i\n", width, height, imageSize, colorDepth);
 
     // Read file to buffer

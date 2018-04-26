@@ -36,7 +36,7 @@ void keyboard();
 
 // TODO: remove
 float candlevar = 0.f;
-int cunt = 0;
+int count = 0;
 
 
 void draw() {
@@ -50,8 +50,6 @@ void draw() {
     //glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
 
-    glShadeModel(GL_FLAT);
-
     // Enable alpha blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -59,6 +57,9 @@ void draw() {
     // Tell OpenGL to order drawing according to depth
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    glEnable(GL_LIGHTING);
+    glShadeModel(GL_FLAT);
 
     gluLookAt(  4.f, 15.f, 65.f + mov,                           // Camera postition
                 -5.f + lookatOffsetX,  4.f + lookatOffsetY, 0.f, // 'Look-at' position
