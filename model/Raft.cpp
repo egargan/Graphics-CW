@@ -143,7 +143,7 @@ void Raft::draw() const {
 
     glTranslatef(-3.f, mastHeight * 0.6f, 0.f);
 
-    glRotatef(rot++, 1.f, 0.f, 0.f);
+    //9glRotatef(rot++, 1.f, 0.f, 0.f);
 
     drawLamp();
 
@@ -214,21 +214,21 @@ void Raft::drawLamp() const {
     // Push new attribute state for lighting properties
     glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
 
-    materialise((float[]){0.7f, 0.7f, 0.7f, 1.f},
-                (float[]){0.7f, 0.7f, 0.7f, 1.f},
-                (float[]){0.3f, 0.3f, 0.3f, 1.f},
+    materialise((float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
+                (float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
+                (float[]){browns[2].x + .2f, browns[2].y + .2f, browns[2].z + .2f, 1.f},
                 1.f);
 
     // Lamp dimensions
     const int panels = 6; // number of glass panels in lamp
-    const float radius = 5.f;
-    const float totalheight = 10.f;
+    const float radius = 1.6f;
+    const float totalheight = 4.f;
 
     const int strutwr = 4;
 
     // Draw lamp downwards from current position, i.e. peak of lamp is drawn at relative origin
 
-    // TODO: clean up
+    // TODO: clean up -- look at simplifying for loops, e.g. adding to t t avoid unnecessary iterations?
 
     glBegin(GL_TRIANGLE_FAN); // Lamp roof
 
@@ -279,46 +279,54 @@ void Raft::drawLamp() const {
 
     glBegin(GL_QUAD_STRIP);
 
-    float x, z;
+        float x, z;
 
-    //const float cageheight = totalheight * 4 / 5.f;
+        for (int t = 0; t <= panels * strutwr * 2 + 1; t++) {
 
-    for (int t = 0; t <= panels * strutwr * 2 + 1; t++) {
+            if (t % (strutwr * 2) < 2) {
 
-        if (t % (strutwr * 2) < 2) {
+                // Slightly indent lamp cage from roof
+                x = radius * 0.9f * sin(t * period);
+                z = radius * 0.9f * cos(t * period);
 
-            x = radius * sin(t * period);
-            z = radius * cos(t * period);
+                glVertex3f(x, -roofheight, z);
+                glVertex3f(x, -totalheight, z);
 
-            // TODO: define normals
-            //norm = {sin((t+0.5f) * period), cos((t+0.5f) * period), 0.f};
-            //norm /= norm.magnitude();
-            //
-            //glNormal3f(norm.x, norm.y, norm.z);
+                // Normal + material properties applied to *next* set of vertices
+                glNormal3f(sin(t * period), 0.f, cos(t * period));
 
-            glVertex3f(x, -roofheight, z);
-            glVertex3f(x, -totalheight, z);
+                materialise((float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
+                            (float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
+                            (float[]){0.3f, 0.3f, 0.3f, 1.f},
+                            1.f);
 
-        };
+            } else if (t % strutwr == 0) {
 
-    }
+                glNormal3f(sin(t * period), 0.f, cos(t * period));
+
+                materialise((float[]){0.7f, 0.6f, 0.2f, 1.f},
+                            (float[]){0.7f, 0.6f, 0.2f, 1.f},
+                            (float[]){0.3f, 0.3f, 0.3f, 1.f},
+                            1.f);
+
+            }
+
+        }
 
     glEnd();
 
 
     glBegin(GL_TRIANGLE_FAN); // Closer lid
 
-    glNormal3f(0.f, -1.f, -0.f);
-    glVertex3f(0.f, -totalheight, 0.f);
+        glNormal3f(0.f, -1.f, 0.f);
+        glVertex3f(0.f, -totalheight, 0.f);
 
-    for (int t = panels * strutwr * 2 + 1; t >= 0; t--) {
+        for (int t = panels * strutwr * 2 + 1; t >= 0; t--) {
 
-        if (t % (strutwr * 2) < 2) {
-            glVertex3f(radius * sin(t * period), -totalheight, radius * cos(t * period));
-
-        };
-
-    }
+            if (t % (strutwr * 2) < 2) {
+                glVertex3f(radius * sin(t * period), -totalheight, radius * cos(t * period));
+            };
+        }
 
     glEnd();
 

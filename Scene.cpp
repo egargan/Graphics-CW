@@ -51,8 +51,8 @@ void draw() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    gluLookAt(  4.f, 15.f, 65.f + mov,                                 // Camera postition
-                -5.f + lookatOffsetX,  4.f + lookatOffsetY, 0.f,  // 'Look-at' position
+    gluLookAt(  4.f, 15.f, 65.f + mov,                           // Camera postition
+                -5.f + lookatOffsetX,  4.f + lookatOffsetY, 0.f, // 'Look-at' position
                 0.f,  1.f, 0.f );                                // Orientation (unit vector) of 'top' of camera
 
     glPushMatrix();
@@ -90,7 +90,7 @@ void draw() {
 
         // night lighting
         makeLight(GL_LIGHT0,
-                  (float[]) {0.f, 0.f, -1.f},                       // direction
+                  (float[]) {0.f, 0.f, 1.f},                        // direction
                   (float[]) {-22.f, 25.f, -220.f, 1.f},             // position
                   (float[3]) {0},                                   // ambient light
                   (float[]) {46/255.f, 56/255.f, 66/255.f, 1.f},    // diffuse
@@ -101,12 +101,12 @@ void draw() {
 
         // day lighting
         makeLight(GL_LIGHT0,
-                  (float[]) {0.f, 0.f, -1.f},                              // direction
+                  (float[]) {0.f, 0.f, 1.f},                               // direction
                   (float[]) {-22.f, 25.f, -220.f, 1.f},                    // position
                   (float[]) {130 / 255.f, 130 / 255.f, 130 / 255.f},       // ambient light
                   (float[]) {150 / 255.f, 189 / 255.f, 189 / 255.f, 1.f},  // diffuse
                   (float[]) {230 / 255.f, 215 / 255.f, 130 / 255.f, 1.f},  // specular
-                  92.f,                                                    // cutoff
+                  180.f,                                                    // cutoff
                   1.1f);                                                   // constant attenuation
     }
 
