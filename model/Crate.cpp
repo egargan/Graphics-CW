@@ -7,7 +7,9 @@
 Crate::Crate(Water *water, Vec3f _location, float _width) :
         FloatingModel(water, _location, _width, _width) {
 
-    textureID = (unsigned int) loadBMP("../textures/plank_32x32.bmp");
+    // TODO: get random texture from box textures?
+
+    textureID = (unsigned int) loadBMP("../textures/crate/plank_oak.bmp");
 
 }
 

@@ -9,7 +9,8 @@
 
 // Scene models
 Water* wart;
-Crate* box;
+Crate* forebox;
+Crate* backbox;
 Raft* raft;
 
 
@@ -33,6 +34,10 @@ void draw();
 void mouse();
 void keyboard();
 
+// TODO: remove
+float candlevar = 0.f;
+int cunt = 0;
+
 
 void draw() {
 
@@ -42,10 +47,14 @@ void draw() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
 
     glShadeModel(GL_FLAT);
+
+    // Enable alpha blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Tell OpenGL to order drawing according to depth
     glEnable(GL_DEPTH_TEST);
@@ -63,8 +72,11 @@ void draw() {
 
     glPopMatrix();
 
-    box->update();
-    box->draw();
+    forebox->update();
+    forebox->draw();
+
+    backbox->update();
+    backbox->draw();
 
     glPushMatrix();
 
@@ -90,13 +102,13 @@ void draw() {
 
         // night lighting
         makeLight(GL_LIGHT0,
-                  (float[]) {0.f, 0.f, 1.f},                        // direction
-                  (float[]) {-22.f, 25.f, -220.f, 1.f},             // position
-                  (float[3]) {0},                                   // ambient light
-                  (float[]) {46/255.f, 56/255.f, 66/255.f, 1.f},    // diffuse
+                  (float[]) {0.f, 0.f, 1.f},                         // direction
+                  (float[]) {-22.f, 25.f, -220.f, 1.f},              // position
+                  (float[3]) {0},                                    // ambient light
+                  (float[]) {46/255.f, 56/255.f, 66/255.f, 1.f},     // diffuse
                   (float[]) {200/255.f, 181/255.f, 118/255.f, 1.f},  // specular
-                  92.f,                                             // cutoff
-                  1.4f);                                            // constant attenuation
+                  180.f,                                             // cutoff
+                  1.4f);                                             // constant attenuation
     } else {
 
         // day lighting
@@ -106,11 +118,24 @@ void draw() {
                   (float[]) {130 / 255.f, 130 / 255.f, 130 / 255.f},       // ambient light
                   (float[]) {150 / 255.f, 189 / 255.f, 189 / 255.f, 1.f},  // diffuse
                   (float[]) {230 / 255.f, 215 / 255.f, 130 / 255.f, 1.f},  // specular
-                  180.f,                                                    // cutoff
+                  180.f,                                                   // cutoff
                   1.1f);                                                   // constant attenuation
     }
 
     glutSwapBuffers(); // Swap double buffers
+
+
+    // TODO: remove
+    //candlevar = candlevar - 0.025f + ((rand() % 11) / 200.f);
+    //
+    //if ((candlevar) > 0.05f) candlevar = 0.05f;
+    //if ((candlevar) < -0.05f) candlevar = -0.05f;
+    //
+    //printf("%.2ff, ", candlevar);
+    //
+    //if (cunt++ > 12){printf("\n"); cunt = 0;}
+
+
 
 }
 
@@ -124,8 +149,11 @@ void init() {
 
     // TODO: seg fault for small tile size, perhaps FloatingModel getting mesh indices outside bounds?
     wart = new Water(2.5f, 120);
-    box =  new Crate(wart, Vec3f{-8.f, 0.f, 34.f}, 3);
+
     raft = new Raft(wart, Vec3f{6.f, 0.1f, 32.f}, 17, 14, 15);
+
+    forebox =  new Crate(wart, Vec3f{-8.f, 0.f, 34.f}, 3);
+    backbox =  new Crate(wart, Vec3f{-15.f, 0.f, 27.f}, 2.9);
 
 }
 

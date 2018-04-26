@@ -18,9 +18,11 @@ Raft::Raft(Water *water, const Vec3f _location, const float _width, const float 
 
     numBaseLogs =  (int) std::round(width / ((baseLogRadius * 2) + idealgap));
 
+    // TODO: account for log gap in calc!
     // baseLogRadius --
 
     // printf("width: %f, op: %f", width, (numBaseLogs * baseLogRadius * 2) + (loggap * (numBaseLogs - 1)));
+
 
     // Populate log colours array, one colour per log
 
@@ -31,6 +33,8 @@ Raft::Raft(Water *water, const Vec3f _location, const float _width, const float 
     for (int i = 0; i < numBaseLogs; i++) {
         baseLogColours[i] = rand() % (int) browns.size();
     }
+
+    lantern = new Lantern();
 
 }
 
@@ -47,6 +51,7 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
                 (float[]) {colr.x, colr.y, colr.z, 1.f},     // Diffuse
                 (float[]) {colr.x, colr.y, colr.z, 1.f},     // Specular
                 1.f);                                        // Shininess
+
 
     glBegin(GL_QUAD_STRIP); // Cylinder length
 
@@ -97,7 +102,6 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
 
 }
 
-float rot = 0.f;
 
 void Raft::draw() const {
 
@@ -143,14 +147,29 @@ void Raft::draw() const {
 
     glTranslatef(-3.f, mastHeight * 0.6f, 0.f);
 
-    //9glRotatef(rot++, 1.f, 0.f, 0.f);
-
-    drawLamp();
+    lantern->draw();
 
 
     glPopMatrix();
     glPopAttrib();
 
+}
+
+/** De-point and delete heap objects. */
+Raft::~Raft() {
+
+    lantern = nullptr;
+    baseLogColours = nullptr;
+
+    delete lantern;
+    delete baseLogColours;
+
+}
+
+void Raft::update() {
+
+    FloatingModel::update();
+    lantern->update();
 }
 
 
@@ -208,134 +227,6 @@ void drawCuboid(const float width, const float height, const float length, const
     glEnd();
 
 }
-
-void Raft::drawLamp() const {
-
-    // Push new attribute state for lighting properties
-    glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
-
-    materialise((float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
-                (float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
-                (float[]){browns[2].x + .2f, browns[2].y + .2f, browns[2].z + .2f, 1.f},
-                1.f);
-
-    // Lamp dimensions
-    const int panels = 6; // number of glass panels in lamp
-    const float radius = 1.6f;
-    const float totalheight = 4.f;
-
-    const int strutwr = 4;
-
-    // Draw lamp downwards from current position, i.e. peak of lamp is drawn at relative origin
-
-    // TODO: clean up -- look at simplifying for loops, e.g. adding to t t avoid unnecessary iterations?
-
-    glBegin(GL_TRIANGLE_FAN); // Lamp roof
-
-        const float roofheight = totalheight / 5.f;
-        constexpr float period = (float) M_PI * 2 / (panels * strutwr * 2);
-
-        glVertex3f(0.f, 0.f, 0.f); // Centre of triangle fan
-
-        Vec3f norm{};
-
-        for (int t = 0; t <= panels * strutwr * 2 + 1; t++) {
-
-            if (t % (strutwr * 2) < 2) {
-
-                glVertex3f(radius * sin(t * period), -roofheight, radius * cos(t * period));
-
-                //norm = {(-roofheight  *  radius * cos((t+1) * period))  -  (radius * cos(t * period)  *  -roofheight),
-                //       (radius * cos(t * period)  *  radius * sin((t+1) * period))  -  (radius * sin(t * period)  *  radius * cos((t+1) * period)),
-                //       (radius * sin(t * period)  *  -roofheight)  -  (-roofheight  *  radius * sin((t+1) * period))};
-
-                norm = {roofheight * radius * (cos(period * t) - cos(period * (t+1))),
-                        radius * radius * sin(period),
-                        roofheight * radius * (sin(period * (t+1)) - sin(period * t))};
-
-                norm /= norm.magnitude();
-
-                glNormal3f(norm.x, norm.y, norm.z);
-
-            } else if (t % strutwr == 0) {
-
-                //norm = {(-roofheight  *  radius * cos((t+1) * period))  -  (radius * cos((t-1) * period)  *  -roofheight),
-                //        (radius * cos((t-1) * period)  *  radius * sin((t+1) * period))  -  (radius * sin((t-1) * period)  *  radius * cos((t+1) * period)),
-                //        (radius * sin((t-1) * period)  *  -roofheight)  -  (-roofheight  *  radius * sin((t+1) * period))};
-
-                norm = {2 * roofheight * radius * sin(period) * sin(period * t),
-                        radius * radius * sin(2 * period),
-                        2 * roofheight * radius * sin(period) * cos(period * t)};
-
-                norm /= norm.magnitude();
-
-                glNormal3f(norm.x, norm.y, norm.z);
-            };
-
-        }
-
-    glEnd();
-
-
-    glBegin(GL_QUAD_STRIP);
-
-        float x, z;
-
-        for (int t = 0; t <= panels * strutwr * 2 + 1; t++) {
-
-            if (t % (strutwr * 2) < 2) {
-
-                // Slightly indent lamp cage from roof
-                x = radius * 0.9f * sin(t * period);
-                z = radius * 0.9f * cos(t * period);
-
-                glVertex3f(x, -roofheight, z);
-                glVertex3f(x, -totalheight, z);
-
-                // Normal + material properties applied to *next* set of vertices
-                glNormal3f(sin(t * period), 0.f, cos(t * period));
-
-                materialise((float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
-                            (float[]){browns[2].x, browns[2].y, browns[2].z, 1.f},
-                            (float[]){0.3f, 0.3f, 0.3f, 1.f},
-                            1.f);
-
-            } else if (t % strutwr == 0) {
-
-                glNormal3f(sin(t * period), 0.f, cos(t * period));
-
-                materialise((float[]){0.7f, 0.6f, 0.2f, 1.f},
-                            (float[]){0.7f, 0.6f, 0.2f, 1.f},
-                            (float[]){0.3f, 0.3f, 0.3f, 1.f},
-                            1.f);
-
-            }
-
-        }
-
-    glEnd();
-
-
-    glBegin(GL_TRIANGLE_FAN); // Closer lid
-
-        glNormal3f(0.f, -1.f, 0.f);
-        glVertex3f(0.f, -totalheight, 0.f);
-
-        for (int t = panels * strutwr * 2 + 1; t >= 0; t--) {
-
-            if (t % (strutwr * 2) < 2) {
-                glVertex3f(radius * sin(t * period), -totalheight, radius * cos(t * period));
-            };
-        }
-
-    glEnd();
-
-    //drawCuboid(5, 5, 10, {0.2f, 0.4f, 0.4f});
-
-    glPopAttrib();
-
-}
-
 
 
 

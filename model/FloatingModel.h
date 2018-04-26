@@ -38,7 +38,7 @@ protected:
 public:
 
     /** Update orientation vector based on y-displacement of 3 points approximating the contact area with water. */
-    inline void update() override {
+    inline virtual void update() override {
 
         Vec3f orientation = surface->getSurfaceNormal(
                 contactPoints[0], contactPoints[1],

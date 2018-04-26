@@ -82,10 +82,10 @@ void Water::draw() const {
     glPushMatrix();
 
     // Translate to far NW corner of mesh
-    glTranslatef(-gridwidth*tilelength, 0.f, -gridwidth*tilelength);
+    glTranslatef(-gridwidth * tilelength, 0.f, -gridwidth*tilelength);
 
     // Iterate over grid
-    for (int x = 0; x < gridsize-1; x++, glTranslatef(tilelength, 0.f, (-gridsize + 1.f)*tilelength)) {
+    for (int x = 0; x < gridsize-1; x++, glTranslatef(tilelength, 0.f, (-gridsize + 1)*tilelength)) {
         for (int z = 0; z < gridsize-1; z++, glTranslatef(0.f, 0.f, tilelength)) {
 
             // Points populated counter-clockwise from NW point

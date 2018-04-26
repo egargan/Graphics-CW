@@ -16,7 +16,7 @@ public:
     /** Constructs model at given location. */
     explicit Model(Vec3f _location) : location{_location} {};
 
-    /** Default constructor -- assumes location at (0, 0, 0). */
+    /** Default constructor -- places object at origin. */
     Model() : location{Vec3f()} {};
 
     // '= 0' makes pure virtual function, i.e. an abstract class member function

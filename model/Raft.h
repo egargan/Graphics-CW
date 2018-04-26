@@ -6,9 +6,13 @@
 #define GRAPHICS_CW_RAFT_H
 
 #include "FloatingModel.h"
+#include "Lantern.h"
 
 
 class Raft : public FloatingModel {
+
+    /** Pointer to raft's lantern object. */ // Separated due to complexity of lantern model.
+    Lantern* lantern;
 
     /** Height of raft's mast. */
     const float mastHeight;
@@ -36,11 +40,17 @@ class Raft : public FloatingModel {
     void drawSail() const;
     void drawLamp() const;
 
+
+
 public:
 
     Raft(Water* water, Vec3f _location, float _width, float _length, float height);
 
+    ~Raft();
+
     void draw() const;
+
+    void update();
 
 };
 
