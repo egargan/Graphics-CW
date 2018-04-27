@@ -12,8 +12,12 @@
 
 #include <cstdio>
 
+// Boilerplate code for initializing OpenGL environment.
+
+
 int windowheight, windowwidth;
 
+/** Check for and print any errors in OpenGL's initialisation. */
 void checkGLError() {
 
     int e = 0;
@@ -26,18 +30,21 @@ void checkGLError() {
     }
 }
 
-void setup() {
+void windowsetup() {
 
-    windowwidth = 900;                                    // initialise global window variables
-    windowheight = 800;                                   // define in your header: int width, height;
+    // initialise global window variables
+    windowwidth = 900;
+    windowheight = 800;
 
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE);  // enable 3D rendering and double buffering
-    glutInitWindowSize(windowwidth, windowheight);              // set window size
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE);    // enable 3D rendering and double buffering
+    glutInitWindowSize(windowwidth, windowheight);    // set window size
 
-    glutCreateWindow("Coursework");                 // create and show window (named MyScene)
+    glutCreateWindow("Coursework");
 
 }
 
+/** Window resize callback.
+ * Refreshes perspective projection according to new window dimensions. */
 void reshape(int _width, int _height) {
 
     windowheight = _height;

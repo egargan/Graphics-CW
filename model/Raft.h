@@ -8,7 +8,10 @@
 #include "FloatingModel.h"
 #include "Lantern.h"
 
-
+// TODO: write
+/**
+ *
+ */
 class Raft : public FloatingModel {
 
     /** Pointer to raft's lantern object. */ // Separated due to complexity of lantern model.
@@ -26,32 +29,31 @@ class Raft : public FloatingModel {
     /** Number of length-way floor logs. */
     int numBaseLogs;
 
-    /** Array of 'nice' brown colours, matching box textures. */
-    std::vector<Vec3f> browns = {Vec3f{25, 17, 9} / 255.f, Vec3f{20, 12, 8} / 255.f,
-                                 Vec3f{20, 12, 0} / 255.f, Vec3f{28, 19, 16} / 255.f,
-                                 Vec3f{30, 21, 9} / 255.f};
+    /** List of random numbers used to add random variation to e.g. log orientation and position.
+     *  Populated on construction. */
+    float* varylist;
 
-    /** Array of 'browns' of colours that will colour each 'log' cylinder in the raft's base. */
-    int* baseLogColours;
+    /** Size of varylist. */
+    const int varylistsize;
 
-    // Texture IDs of log textures
-    int logTexId, logEndTexId;
+    /** Pointer to list of texture IDs for a number of log textures. */
+    int* logTexIds;
 
-    // Private draw methods for component shapes.
-    void drawLog(float radius, float length, Vec3f colr) const;
-    void drawSail() const;
-    void drawLamp() const;
+    /** Texture ID of 'end' log texture / cross-section texture. */
+    int logEndTexId;
 
+    /** Draws log of given dimensions. */
+    void drawLog(float radius, float length, int) const;
 
 
 public:
 
+    /** Constructs raft model with given dimensions and pointer to the Water model it 'sits' on. */
     Raft(Water* water, Vec3f _location, float _width, float _length, float height);
 
     ~Raft();
 
     void draw() const;
-
     void update();
 
 };

@@ -7,6 +7,8 @@
 
 #include "Water.h"
 
+/** Model subclass that animates self as though it bobs on top of a Water model.
+ *  @see Water.h */
 class FloatingModel : public Model {
 
 protected:
@@ -26,6 +28,8 @@ protected:
     /** 'Bob' displacement of model on water layer. */
     float bob;
 
+    // TODO: write
+    /** Constructs model and establishes a set of water mesh vertices that... */
     FloatingModel(Water* water, Vec3f _location, float _width, float _length) :
             Model(_location),
             surface{water}, width{_width}, length{_length}, rotX{0.f}, rotZ{0.f}, contactPoints{0}, bob{0.f}
@@ -45,6 +49,7 @@ public:
                 contactPoints[4], contactPoints[5]);
 
         // TODO: this isn't right! need to get X and Z rotations that map (0,1,0) to orientation vector.
+        // But will have to do... gives good enough results
         rotX = 90 - atan2(orientation.y, orientation.x) * (180/M_PI);
         rotZ = 90 - atan2(orientation.y, orientation.z) * (180/M_PI);
 

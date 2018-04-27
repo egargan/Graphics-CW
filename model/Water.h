@@ -11,6 +11,10 @@
 #include <vector>
 #include <cmath>
 
+/**
+ * Model composed of vertex mesh animated using perlin noise to imitate the movement of water.
+ * Triangles are drawn between each neighbouring set of vertices to form the surface of the water layer.
+ */
 class Water : Model {
 
     /** Holds y-displacement for each point in water, describing current 'wave' shape of water layer. */

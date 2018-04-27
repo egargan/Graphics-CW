@@ -5,34 +5,76 @@
 #include "Raft.h"
 #include "../Utility.h"
 
+/** Constructs raft model and loads relevant textures.
+ *
+ * @param water      Pointer to Water object on which the raft is supposed to float.
+ * @param _location  Raft's location coordinates, vector of (x, y, z).
+ * @param _width     Width of raft in x-direction.
+ * @param _length    Length of raft in z-direction.
+ * @param height     Height of raft's mast in y-direction.
+ */
 Raft::Raft(Water *water, const Vec3f _location, const float _width, const float _length, const float height) :
-        FloatingModel(water, _location, _width, _length), mastHeight{height} {
 
-    // logs will be approximately (double) this size, adjusted slightly to exactly fit width
+        FloatingModel(water, _location, _width, _length),
+        mastHeight{height},
+        varylistsize{3} // Initialize to be equal to the number of available log textures
+{
+
+    // Logs will be approximately (double) this size, adjusted slightly to exactly fit width
     const float idealrad = 0.6f;
     const float idealgap = idealrad / 5.f;
 
-    // TODO: account for log gap in calc!
     baseLogRadius = (idealrad + (fmod(width, idealrad) / (floor(width / idealrad))));
     numBaseLogs =  (int) std::round(width / ((baseLogRadius * 2) + idealgap));
 
-    baseLogColours = new int[numBaseLogs] {0};
+    varylist = new float[numBaseLogs] {0};
 
-    srand(30);
-
-    for (int i = 0; i < numBaseLogs; i++) {
-        baseLogColours[i] = rand() % (int) browns.size();
+    // For each base log, create a random number between 0 and 1
+    for (int i = 0, srand(35); i < numBaseLogs; i++) {
+        varylist[i] = (rand() % 20) / 20.f;
     }
 
+    logTexIds = new int[varylistsize] {0};
+
     // Load log textures
-    logTexId = loadBMP("../textures/log/log_oak2.bmp");
+    logTexIds[0] = loadBMP("../textures/log/log_oak.bmp");
+    logTexIds[1] = loadBMP("../textures/log/log_oak2.bmp");
+    logTexIds[2] = loadBMP("../textures/log/log_spruce.bmp");
+
     logEndTexId = loadBMP("../textures/log/log_end.bmp");
 
     lantern = new Lantern();
 
 }
 
-void Raft::drawLog(const float radius, const float length, const Vec3f colr) const {
+/** De-point and delete heap objects. */
+Raft::~Raft() {
+
+    lantern = nullptr;
+    varylist = nullptr;
+
+    delete lantern;
+    delete varylist;
+
+}
+
+/** Updates self's position according to FloatingModel's update(), and lantern model. */
+void Raft::update() {
+
+    FloatingModel::update();
+    lantern->update();
+}
+
+
+// TODO: fill out comment
+
+/**
+ *
+ * @param radius  Radius of log in x-direction, i.e. half its cross-section's width.
+ * @param length  Length of log in z-direction.
+ * @param varyInd Index in raft's 'vary list', used to add randomness to log colour.
+ */
+void Raft::drawLog(const float radius, const float length, const int varyInd) const {
 
     int res = 8; // Number of quads comprising cylinder
 
@@ -44,26 +86,15 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, (GLuint) logTexId);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) logTexIds[(int)(varylist[varyInd] * 3) % 3]);
 
     // 'GL_MODULATE' multiples light color by texture color
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    //materialise((float[]) {colr.x, colr.y, colr.z, 1.f},     // Ambient colour
-    //            (float[]) {colr.x, colr.y, colr.z, 1.f},     // Diffuse
-    //            (float[]) {colr.x, colr.y, colr.z, 1.f},     // Specular
-    //            1.f);                                        // Shininess
-
     // Give material lighting properties that combine with texture
-    //materialise((float[]){0.4f - colr.x, 0.4f - colr.y, 0.4f - colr.z, 1.f},
-    //            (float[]){0.7f - colr.x, 0.7f - colr.y, 0.7f - colr.z, 1.f},
-    //            (float[]){0.3f - colr.x, 0.3f - colr.y, 0.3f - colr.z, 1.f},
-    //            1.f);
-
-    //// Give material lighting properties that combine with texture
-    materialise((float[]){0.4f, 0.4f, 0.4f, 1.f},
-                (float[]){0.7f, 0.7f, 0.7f, 1.f},
-                (float[]){0.3f, 0.3f, 0.3f, 1.f},
+    materialise((float[]){0.5f + varylist[varyInd] * 0.1f,  0.5f + varylist[varyInd] * 0.1f,  0.5f + varylist[varyInd] * 0.1f, 1.f},
+                (float[]){0.5f + varylist[varyInd] * 0.1f, 0.5f + varylist[varyInd] * 0.1f,  0.5f + varylist[varyInd] * 0.1f, 1.f},
+                (float[]){0.1f, 0.1f, 0.1f, 1.f},
                 1.f);
 
     glBegin(GL_QUAD_STRIP); // Cylinder length
@@ -90,14 +121,7 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
     // Bind to the NULL texture buffer
     glBindTexture(GL_TEXTURE_2D, (GLuint) logEndTexId);
 
-
     glBegin(GL_TRIANGLE_FAN); // 'Far' lid for cylinder
-
-        //// Make end of logs slightly lighter than log 'bark'
-        //materialise((float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
-        //            (float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
-        //            (float[3]) {0.f},
-        //            0.4f);
 
         glNormal3f(0.f, 0.f, -1.f);
 
@@ -127,7 +151,6 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
 
     // Bind to NULL texture buffer
     glBindTexture(GL_TEXTURE_2D, (GLuint) NULL);
-
     glDisable(GL_TEXTURE_2D);
 
     glPopAttrib();
@@ -152,8 +175,6 @@ void Raft::draw() const {
     // Horizontal distance of lantern away from mast / the length of the arm that supports it
     const float lanternjut = width * 0.25f;
 
-    Vec3f col{}; // Temp holder for getting colours from 'baseLogColours'
-
     // Push new attribute state for lighting properties
     glPushAttrib(GL_SPECULAR | GL_DIFFUSE | GL_AMBIENT | GL_SHININESS);
 
@@ -168,13 +189,12 @@ void Raft::draw() const {
 
             for (int i = 0; i < numBaseLogs; i++, glTranslatef(baseLogRadius * 2.f + baseLogGap, 0.f, 0.f)) {
 
-                col = browns[baseLogColours[i]];
+                glPushMatrix(); // Draw individual logs with slight variation in z direction
 
-                glPushMatrix(); // Draw individual logs with slight variation in z direction (given by colour values!)
+                    glTranslatef(0.f, 0.f, varylist[i]);
+                    glRotatef(varylist[i] * 16, 0.f, 0.f, 1.f);
 
-                    glTranslatef(0.f, 0.f, ((col.x - 0.2f) * 5));
-
-                    drawLog(baseLogRadius + col.z, length + col.x * 4, col);
+                    drawLog(baseLogRadius + varylist[i] * 0.2f, length + varylist[i] * 0.4f, i);
 
                 glPopMatrix();
             }
@@ -188,7 +208,7 @@ void Raft::draw() const {
 
             glRotatef(270, 1.f, 0.f, 0.f);
 
-            drawLog(baseLogRadius * 0.9f, mastHeight, browns[2]);
+            drawLog(baseLogRadius * 0.9f, mastHeight, 2);
 
         glPopMatrix();
 
@@ -199,7 +219,7 @@ void Raft::draw() const {
             glTranslatef(width * 0.06f, lanternheight * 1.1f, 0.f);
             glRotatef(-90, 0.f, 1.f, 0.f);
 
-            drawLog(baseLogRadius * 0.48f, lanternjut * 1.4f, browns[1]);
+            drawLog(baseLogRadius * 0.48f, lanternjut * 1.4f, 3);
 
         glPopMatrix();
 
@@ -211,7 +231,7 @@ void Raft::draw() const {
             glRotatef(-90, 0.f, 1.f, 0.f);
             glRotatef(-47, 1.f, 0.f, 0.f);
 
-            drawLog(baseLogRadius * 0.4f, mastHeight * 0.2f, browns[3]);
+            drawLog(baseLogRadius * 0.4f, mastHeight * 0.2f, 4);
 
         glPopMatrix();
 
@@ -234,84 +254,6 @@ void Raft::draw() const {
     glPopAttrib();
 
 }
-
-/** De-point and delete heap objects. */
-Raft::~Raft() {
-
-    lantern = nullptr;
-    baseLogColours = nullptr;
-
-    delete lantern;
-    delete baseLogColours;
-
-}
-
-void Raft::update() {
-
-    FloatingModel::update();
-    lantern->update();
-}
-
-
-/** Draws a cuboid with given cross-section height and width, and given length.
- *  Cuboid is drawn updwards (+y), w.r.t. current matrix. */
-void drawCuboid(const float width, const float height, const float length, const Vec3f colr) {
-
-    const float halfwidth = width / 2.f;
-    const float halfheight = height / 2.f;
-
-    glBegin(GL_QUADS);
-
-        glNormal3f(0.f, -1.f, 0.f); // Bottom face
-
-        glVertex3f(-halfwidth, 0.f, -halfheight);
-        glVertex3f(halfwidth, 0.f, -halfheight);
-        glVertex3f(halfwidth, 0.f, halfheight);
-        glVertex3f(-halfwidth, 0.f, halfheight);
-
-        glNormal3f(-1.f, 0.f, 0.f); // Left face
-
-        glVertex3f(-halfwidth, 0.f, -halfheight);
-        glVertex3f(-halfwidth, 0.f, halfheight);
-        glVertex3f(-halfwidth, length, halfheight);
-        glVertex3f(-halfwidth, length, -halfheight);
-
-        glNormal3f(0.f, 0.f, 1.f); // Front face
-
-        glVertex3f(-halfwidth, 0.f, halfheight);
-        glVertex3f(halfwidth, 0.f, halfheight);
-        glVertex3f(halfwidth, length, halfheight);
-        glVertex3f(-halfwidth, length, halfheight);
-
-        glNormal3f(1.f, 0.f, 0.f); // Right face
-
-        glVertex3f(halfwidth, 0.f, halfheight);
-        glVertex3f(halfwidth, 0.f, -halfheight);
-        glVertex3f(halfwidth, length, -halfheight);
-        glVertex3f(halfwidth, length, halfheight);
-
-        glNormal3f(0.f, 0.f, -1.f); // Back face
-
-        glVertex3f(halfwidth, 0.f, -halfheight);
-        glVertex3f(-halfwidth, 0.f, -halfheight);
-        glVertex3f(-halfwidth, length, -halfheight);
-        glVertex3f(halfwidth, length, -halfheight);
-
-        glNormal3f(0.f, 1.f, 0.f); // Top face
-
-        glVertex3f(-halfwidth, length, -halfheight);
-        glVertex3f(halfwidth, length, -halfheight);
-        glVertex3f(halfwidth, length, halfheight);
-        glVertex3f(-halfwidth, length, halfheight);
-
-    glEnd();
-
-}
-
-
-
-
-
 
 
 

@@ -35,12 +35,12 @@ void Lantern::draw() const {
 
     materialise((float[]){cagecolr.x, cagecolr.y, cagecolr.z, 1.f},
                 (float[]){cagecolr.x, cagecolr.y, cagecolr.z, 1.f},
-                (float[]){cagecolr.x - .2f, cagecolr.y - .2f, cagecolr.z - .2f, 1.f},
+                (float[]){cagecolr.x - 0.2f, cagecolr.y - 0.2f, cagecolr.z - 0.2f, 1.f},
                 1.f);
 
     glutSolidSphere(.22f, 6, 6); // Draw ball at lantern roof's peak
 
-    // TODO: clean up -- look at simplifying for loops, e.g. adding to t avoid unnecessary iterations?
+    // TODO: comment loops, esp. the ifs in which vertices are defined
 
     glBegin(GL_TRIANGLE_FAN); // Lamp roof
 
@@ -54,12 +54,6 @@ void Lantern::draw() const {
 
                 glVertex3f(radius * sin(t * period), -roofheight, radius * cos(t * period));
 
-                //norm = {(-roofheight  *  radius * cos((t+1) * period))  -  (radius * cos(t * period)  *  -roofheight),
-                //       (radius * cos(t * period)  *  radius * sin((t+1) * period))  -  (radius * sin(t * period)  *  radius * cos((t+1) * period)),
-                //       (radius * sin(t * period)  *  -roofheight)  -  (-roofheight  *  radius * sin((t+1) * period))};
-
-                // simplified to..
-
                 // Get surface normal of current triangle made up of (t, t+1, origin)
                 norm = {roofheight * radius * (cos(period * t) - cos(period * (t+1))),
                         radius * radius * sin(period),
@@ -70,12 +64,6 @@ void Lantern::draw() const {
                 glNormal3f(norm.x, norm.y, norm.z);
 
             } else if (t % strutwr == 0) {
-
-                //norm = {(-roofheight  *  radius * cos((t+1) * period))  -  (radius * cos((t-1) * period)  *  -roofheight),
-                //        (radius * cos((t-1) * period)  *  radius * sin((t+1) * period))  -  (radius * sin((t-1) * period)  *  radius * cos((t+1) * period)),
-                //        (radius * sin((t-1) * period)  *  -roofheight)  -  (-roofheight  *  radius * sin((t+1) * period))};
-
-                // simplified to..
 
                 // Get surface normal of current triangle made up of (t-1, t+1, origin),
                 // which equates to the normal of current glass panel
@@ -127,7 +115,7 @@ void Lantern::draw() const {
 
         glTranslatef(0.f, -totalheight * 0.7f, 0.f);
 
-        makeLight(GL_LIGHT2,
+        makeLight(GL_LIGHT3,
                   (float[]) {0.f, -1.f, 0.f},                           // direction
                   (float[]) {0.f, 0.f, 0.f, 1.f},                       // position
                   (float[]) {0.f, 0.f, 0.f},                            // ambient light
@@ -137,8 +125,8 @@ void Lantern::draw() const {
                   1.4f);                                                // constant attenuation
 
         // Give light special attenuation so we're not lighting the whole scene up
-        glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION,    0.04f - lightVary[lightVaryIter] * 0.5f);
-        glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.005f);
+        glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION,    0.04f - lightVary[lightVaryIter] * 0.5f);
+        glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 0.005f);
 
         glDisable(GL_LIGHTING);
 

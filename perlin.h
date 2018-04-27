@@ -53,10 +53,9 @@
                             {1,  0,  1}, {-1, 0,  1}, {1,  0,  -1}, {-1, 0,  -1},
                             {0,  1,  1}, {0,  -1, 1}, {0,  1,  -1}, {0,  -1, -1}};
 
-    int fastfloor(float x) {
+    inline int fastfloor(float x) {
         return x > 0 ? (int) x : (int) x - 1;
     }
-
 
     inline float dot(const int* g, float x, float y, float z) {
         return g[0] * x + g[1] * y + g[2] * z;
@@ -127,7 +126,7 @@
 
 
 /** Repeatedly samples noise function with different parameters for less cyclic noise. */
-float octaveNoise(float x, float y, float z, int octaves) {
+inline float octaveNoise(float x, float y, float z, int octaves) {
 
     float total = 0;
     float frequency = 1;

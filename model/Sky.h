@@ -67,6 +67,7 @@ class Sky : Model {
 
 public:
 
+    /** Constructs Sky model with given dimensions and location. */
     Sky(const float _width, const float _height, Vec3f location) :
             Model(location),
             width{_width}, height{_height},
@@ -74,6 +75,9 @@ public:
             rot{0.f}, transtate{1.f}
     {}
 
+    /** Draws day and night sky rectangles according to current rotation, and creates sun or moon
+     *  light sources according to 'daytime' boolean.
+     *  Sun, moon and star models (i.e. glutSpheres) are drawn on top of day/night sky layers. */
     void draw() const {
 
         // Holders for halves of sky dimension values
@@ -130,6 +134,7 @@ public:
 
             glColor3f(1.f, 1.f, 1.f);
 
+            // Draw small spheres representing stars according to (x, y) coords in 'starPositions'
             for (auto iter = starPositions.cbegin(); iter < starPositions.cend(); std::advance(iter, 2)) {
 
                 glPushMatrix();
@@ -138,7 +143,8 @@ public:
                 glPopMatrix();
             }
 
-
+            // Only draw one of sun or moon light source -- drawing both would result in light 'leaking' through
+            // from below the water's horizon, especially daylight's ambient light.
             if (daytime) {
 
                 makeLight(GL_LIGHT0,

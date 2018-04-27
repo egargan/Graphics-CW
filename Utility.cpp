@@ -4,12 +4,13 @@
 
 #include "Utility.h"
 
-/** Calls gl methods to setup a surface that reflects light -- make sure to push + pop attribs either side!  */
+/** Calls gl methods to setup a surface that reflects light -- make sure to push + pop attribs either side!
+ *  Null arguments will ignore the corresponding attribute, leaving it unchanged. */
 void materialise(float amb[], float dif[], float spec[], float shine)  {
 
-    // Allow null values
-    if (amb != nullptr)     glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
-    if (dif != nullptr)     glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
+    // Allow null values, leave unchanged
+    if (amb  != nullptr)    glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
+    if (dif  != nullptr)    glMaterialfv(GL_FRONT, GL_DIFFUSE, dif);
     if (spec != nullptr)    glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
     if (shine != 0.0)       glMaterialf(GL_FRONT, GL_SHININESS, shine);
 
@@ -63,9 +64,6 @@ int loadBMP(const std::string& path) {
 
     // Create a buffer
     auto data = new unsigned char[imageSize];
-
-    // TODO: remove
-    //printf("width %i, height %i, imageSize %i, colord %i\n", width, height, imageSize, colorDepth);
 
     // Read file to buffer
     fread(data, 1, (size_t) imageSize, file);

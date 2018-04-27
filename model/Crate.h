@@ -10,14 +10,15 @@
 
 class Crate : public FloatingModel {
 
+    /** ID of crate texture. */
     unsigned int texId;
 
 public:
 
+    /** Crate constructor accepting dimensions. */
     Crate(Water* water, Vec3f _location, float _width);
 
     void draw() const;
-
 
 };
 

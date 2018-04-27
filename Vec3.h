@@ -107,9 +107,6 @@ struct Vec3 {
         return sqrt(x*x + y*y + z*z);
     }
 
-    void print() const {
-        printf("{%f, %f, %f}\n", x, y, z);
-    }
 
 };
 

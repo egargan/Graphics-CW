@@ -19,8 +19,11 @@ Water::Water(int meshlength) : Water(1.f, meshlength) {
 }
 
 /**
+ * Constructor accepting a size of each individual 'tile' (i.e. the width between two adjacent vertices),
+ * and the number of tiles in the x and z direction across water layer.
+ *
  * @param tilesize      Side length of individual mesh cell / tile.
- * @param meshlength    Number of tiles across one length of square, i.e. meshsize * tilesize = length of mesh.
+ * @param meshlength    Number of tiles across one length of water layer, i.e. meshsize * tilesize = length of mesh.
  */
 Water::Water(float _tilelength, int meshlength) : tilelength{_tilelength} {
 
@@ -33,6 +36,11 @@ Water::~Water() {
     mesh.clear();
 }
 
+/** Animates water model by a single animation 'tick'.
+ *
+ * Each vertex in the water mesh is displaced in the y-direction according to a consistent perlin noise sample.
+ * 'octaveNoise' performs multiple perlin noise samples to produce a less cyclical and more 'fluid' animation.
+ */
 void Water::update() {
 
     const auto gridsize = (int) mesh.size();
@@ -57,6 +65,11 @@ void Water::update() {
 
 }
 
+/** Draws the triangles that model up the water's surface.
+ *
+ * For each set of four neighbouring vertices, two triangles are drawn between them. The plane of the triangles
+ * are determined by the y-displacements of each vertex, held in 'mesh[][]'.
+ */
 void Water::draw() const {
 
     const auto gridsize = (int) mesh.size();
@@ -93,6 +106,7 @@ void Water::draw() const {
 
             glBegin(GL_TRIANGLES);
 
+            // Derive triangle's surface normal
             norm = cross(points[1]-points[0], points[2]-points[0]);
             norm /= norm.magnitude(); // OpenGL expects unit normal vectors, so we / by magnitude
 
@@ -120,6 +134,8 @@ void Water::draw() const {
 
 }
 
+/** Returns surface normal of the triangle described by given coordinates, referring to y-displacements in the
+ *  mesh array. */
 Vec3f Water::getSurfaceNormal(const int x1, const int z1,
                               const int x2, const int z2,
                               const int x3, const int z3) const {
@@ -133,6 +149,7 @@ Vec3f Water::getSurfaceNormal(const int x1, const int z1,
 
 }
 
+/** Returns y-displacement of mesh vertex at given (x, z) (i.e. cartesian coordinates in x/z plane). */
 float Water::getMeshY(const int x, const int z) const {
 
     return mesh[x][z];

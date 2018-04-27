@@ -4,15 +4,14 @@
 
 #include "Crate.h"
 
+/** Constructs model as a 'FloatingModel' and loads crate texture. */
 Crate::Crate(Water *water, Vec3f _location, float _width) :
         FloatingModel(water, _location, _width, _width) {
 
-    // TODO: get random texture from box textures?
-
     texId = (unsigned int) loadBMP("../textures/crate/plank_oak.bmp");
-
 }
 
+/** Draws crate with texture given by constructor. */
 void Crate::draw() const {
 
     const float halfwidth = width / 2.f;
@@ -31,7 +30,7 @@ void Crate::draw() const {
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
         // Give material lighting properties that combine with texture
-        materialise((float[]){0.7f, 0.7f, 0.7f, 1.f},
+        materialise((float[]){0.5f, 0.5f, 0.5f, 1.f},
                     (float[]){0.7f, 0.7f, 0.7f, 1.f},
                     (float[]){0.3f, 0.3f, 0.3f, 1.f},
                     1.f);
