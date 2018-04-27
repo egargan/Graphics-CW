@@ -11,6 +11,10 @@ protected:
 
     Vec3f location;
 
+    /** Translates model to given location.
+ *  Can be overridden to apply custom transformations. */
+    inline void doTransform() const { glTranslatef(location.x, location.y, location.z); }
+
 public:
 
     /** Constructs model at given location. */

@@ -23,6 +23,8 @@ inline void makeLight(GLenum lr,
                       float dif[], float spec[],
                       float cutoff, float atten) {
 
+    glDisable(lr);
+
     glLightfv(lr, GL_SPOT_DIRECTION, dir);
     glLightf(lr, GL_SPOT_CUTOFF, cutoff);
     glLightf(lr,  GL_SPOT_EXPONENT, 8.f);

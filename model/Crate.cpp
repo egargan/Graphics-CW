@@ -22,7 +22,7 @@ void Crate::draw() const {
         glPushAttrib(GL_ALL_ATTRIB_BITS);
 
         // Transform to crate location + rotate
-        doTransform();
+        FloatingModel::doTransform();
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, textureID);

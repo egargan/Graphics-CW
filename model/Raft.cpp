@@ -8,8 +8,6 @@
 Raft::Raft(Water *water, const Vec3f _location, const float _width, const float _length, const float height) :
         FloatingModel(water, _location, _width, _length), mastHeight{height} {
 
-    // TODO: maybe size logs according to raft width and height, e.g. fewer chunky logs if raft is extra long?
-
     // logs will be approximately (double) this size, adjusted slightly to exactly fit width
     const float idealrad = 0.6f;
     const float idealgap = idealrad / 5.f;
@@ -22,7 +20,6 @@ Raft::Raft(Water *water, const Vec3f _location, const float _width, const float 
     // baseLogRadius --
 
     // printf("width: %f, op: %f", width, (numBaseLogs * baseLogRadius * 2) + (loggap * (numBaseLogs - 1)));
-
 
     // Populate log colours array, one colour per log
 
@@ -77,7 +74,7 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
         // Make end of logs slightly lighter than log 'bark'
         materialise((float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
                     (float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
-                    nullptr,
+                    (float[3]) {0.f},
                     0.4f);
 
         glNormal3f(0.f, 0.f, -1.f);
@@ -118,7 +115,7 @@ void Raft::draw() const {
     const float lanternheight = mastHeight * 0.6f;
 
     // Horizontal distance of lantern away from mast / the length of the arm that supports it
-    const float lanternjust = mastHeight * 0.6f;
+    const float lanternjut = width * 0.25f;
 
     Vec3f col{}; // Temp holder for getting colours from 'baseLogColours'
 
@@ -127,7 +124,7 @@ void Raft::draw() const {
 
     glPushMatrix();
 
-        doTransform();
+        FloatingModel::doTransform();
 
         glPushMatrix(); // Push central position of raft, and draw logs making up floor of raft
 
@@ -149,23 +146,25 @@ void Raft::draw() const {
 
         glPopMatrix();
 
+        // Twist mast + attachments so is not exactly perpendicular to base logs
+        glRotatef(21, 0.f, 1.f, 0.f);
 
         glPushMatrix(); // Draw central mast
 
-            glRotatef(-91, 1.f, 0.f, 0.f);
+            glRotatef(270, 1.f, 0.f, 0.f);
 
-            drawLog(baseLogRadius * 0.9f, mastHeight, browns[1]);
+            drawLog(baseLogRadius * 0.9f, mastHeight, browns[2]);
 
         glPopMatrix();
 
 
-        glPushMatrix();  // Draw lantern arm, i.e. the log that 'holds' the lantern up
+        glPushMatrix(); // Draw lantern arm, i.e. the log that 'holds' the lantern up
 
             // Translate to just above lantern, and right a bit so it appears to go through mast
             glTranslatef(width * 0.06f, lanternheight * 1.1f, 0.f);
             glRotatef(-90, 0.f, 1.f, 0.f);
 
-            drawLog(baseLogRadius * 0.48f, width * 0.35f, browns[1]);
+            drawLog(baseLogRadius * 0.48f, lanternjut * 1.4f, browns[1]);
 
         glPopMatrix();
 
@@ -184,7 +183,7 @@ void Raft::draw() const {
 
         glPushMatrix(); // Draw lantern
 
-            glTranslatef(-width * 0.26f, lanternheight, 0.f);
+            glTranslatef(-lanternjut, lanternheight, 0.f);
 
             // Undo floating model's 'bob' rotation so lamp is naturally stationary relative to raft
             glRotatef(-rotX, 1.f, 0.f, 0.f);
@@ -193,8 +192,6 @@ void Raft::draw() const {
             lantern->draw();
 
         glPopMatrix();
-
-
 
 
     glPopMatrix();
