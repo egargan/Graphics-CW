@@ -15,9 +15,7 @@
  * @param meshlength    Mesh side length.
  * */
 Water::Water(int meshlength) : Water(1.f, meshlength) {
-
     // Delegated constructors can only be called in initialization list ^.
-
 }
 
 /**
@@ -33,7 +31,6 @@ Water::Water(float _tilelength, int meshlength) : tilelength{_tilelength} {
 Water::~Water() {
 
     mesh.clear();
-
 }
 
 void Water::update() {

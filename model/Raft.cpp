@@ -12,16 +12,9 @@ Raft::Raft(Water *water, const Vec3f _location, const float _width, const float 
     const float idealrad = 0.6f;
     const float idealgap = idealrad / 5.f;
 
-    baseLogRadius = (idealrad + (fmod(width, idealrad) / (floor(width / idealrad))));
-
-    numBaseLogs =  (int) std::round(width / ((baseLogRadius * 2) + idealgap));
-
     // TODO: account for log gap in calc!
-    // baseLogRadius --
-
-    // printf("width: %f, op: %f", width, (numBaseLogs * baseLogRadius * 2) + (loggap * (numBaseLogs - 1)));
-
-    // Populate log colours array, one colour per log
+    baseLogRadius = (idealrad + (fmod(width, idealrad) / (floor(width / idealrad))));
+    numBaseLogs =  (int) std::round(width / ((baseLogRadius * 2) + idealgap));
 
     baseLogColours = new int[numBaseLogs] {0};
 
@@ -30,6 +23,10 @@ Raft::Raft(Water *water, const Vec3f _location, const float _width, const float 
     for (int i = 0; i < numBaseLogs; i++) {
         baseLogColours[i] = rand() % (int) browns.size();
     }
+
+    // Load log textures
+    logTexId = loadBMP("../textures/log/log_oak2.bmp");
+    logEndTexId = loadBMP("../textures/log/log_end.bmp");
 
     lantern = new Lantern();
 
@@ -44,11 +41,30 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
 
     Vec3f norm{}; // Surface normal holder
 
-    materialise((float[]) {colr.x, colr.y, colr.z, 1.f},     // Ambient colour
-                (float[]) {colr.x, colr.y, colr.z, 1.f},     // Diffuse
-                (float[]) {colr.x, colr.y, colr.z, 1.f},     // Specular
-                1.f);                                        // Shininess
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
 
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) logTexId);
+
+    // 'GL_MODULATE' multiples light color by texture color
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    //materialise((float[]) {colr.x, colr.y, colr.z, 1.f},     // Ambient colour
+    //            (float[]) {colr.x, colr.y, colr.z, 1.f},     // Diffuse
+    //            (float[]) {colr.x, colr.y, colr.z, 1.f},     // Specular
+    //            1.f);                                        // Shininess
+
+    // Give material lighting properties that combine with texture
+    //materialise((float[]){0.4f - colr.x, 0.4f - colr.y, 0.4f - colr.z, 1.f},
+    //            (float[]){0.7f - colr.x, 0.7f - colr.y, 0.7f - colr.z, 1.f},
+    //            (float[]){0.3f - colr.x, 0.3f - colr.y, 0.3f - colr.z, 1.f},
+    //            1.f);
+
+    //// Give material lighting properties that combine with texture
+    materialise((float[]){0.4f, 0.4f, 0.4f, 1.f},
+                (float[]){0.7f, 0.7f, 0.7f, 1.f},
+                (float[]){0.3f, 0.3f, 0.3f, 1.f},
+                1.f);
 
     glBegin(GL_QUAD_STRIP); // Cylinder length
 
@@ -62,25 +78,34 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
 
             glNormal3f(norm.x, norm.y, norm.z);
 
+            glTexCoord2d(t/(float)res, 0);
             glVertex3f(x, y, 0.f);
+
+            glTexCoord2d(t/(float)res, 1);
             glVertex3f(x, y, length);
         }
 
     glEnd();
 
+    // Bind to the NULL texture buffer
+    glBindTexture(GL_TEXTURE_2D, (GLuint) logEndTexId);
+
 
     glBegin(GL_TRIANGLE_FAN); // 'Far' lid for cylinder
 
-        // Make end of logs slightly lighter than log 'bark'
-        materialise((float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
-                    (float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
-                    (float[3]) {0.f},
-                    0.4f);
+        //// Make end of logs slightly lighter than log 'bark'
+        //materialise((float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
+        //            (float[]) {colr.x + 0.52f, colr.y + 0.44f, colr.z + 0.28f, 1.f},
+        //            (float[3]) {0.f},
+        //            0.4f);
 
         glNormal3f(0.f, 0.f, -1.f);
+
+        glTexCoord2d(0.5f, 0.5f);
         glVertex3f(0.f, 0.f, 0.f); // Centre of triangle fan
 
         for (int t = 0; t <= res; t++) {
+            glTexCoord2d(sin(t * period) * 0.5f + 0.5f, cos(t * period) * 0.5f + 0.5f);
             glVertex3f(radius * sin(t * period), radius * cos(t * period), 0.f);
         }
 
@@ -89,13 +114,23 @@ void Raft::drawLog(const float radius, const float length, const Vec3f colr) con
     glBegin(GL_TRIANGLE_FAN); // Closer lid
 
         glNormal3f(0.f, 0.f, 1.f);
+
+        glTexCoord2d(0.5f, 0.5f);
         glVertex3f(0.f, 0.f, length);
 
         for (int t = res; t >= 0; t--) {
+            glTexCoord2d(sin(t * period) * 0.5f + 0.5f, cos(t * period) * 0.5f + 0.5f);
             glVertex3f(radius * sin(t * period), radius * cos(t * period), length);
         }
 
     glEnd();
+
+    // Bind to NULL texture buffer
+    glBindTexture(GL_TEXTURE_2D, (GLuint) NULL);
+
+    glDisable(GL_TEXTURE_2D);
+
+    glPopAttrib();
 
 }
 

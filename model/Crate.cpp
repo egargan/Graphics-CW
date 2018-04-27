@@ -9,7 +9,7 @@ Crate::Crate(Water *water, Vec3f _location, float _width) :
 
     // TODO: get random texture from box textures?
 
-    textureID = (unsigned int) loadBMP("../textures/crate/plank_oak.bmp");
+    texId = (unsigned int) loadBMP("../textures/crate/plank_oak.bmp");
 
 }
 
@@ -25,7 +25,7 @@ void Crate::draw() const {
         FloatingModel::doTransform();
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glBindTexture(GL_TEXTURE_2D, texId);
 
         // 'GL_MODULATE' multiples light color by texture color
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

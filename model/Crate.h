@@ -10,7 +10,7 @@
 
 class Crate : public FloatingModel {
 
-    unsigned int textureID;
+    unsigned int texId;
 
 public:
 

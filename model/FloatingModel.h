@@ -31,7 +31,6 @@ protected:
             surface{water}, width{_width}, length{_length}, rotX{0.f}, rotZ{0.f}, contactPoints{0}, bob{0.f}
     {
         updateContactPoints(); // Get initial points of contact with water
-
         update(); // Get initial orientation.
     };
 

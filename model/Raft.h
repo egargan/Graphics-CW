@@ -26,14 +26,16 @@ class Raft : public FloatingModel {
     /** Number of length-way floor logs. */
     int numBaseLogs;
 
-    // TODO: move elsewhere? 'Raft' doesn't really need to store these + maybe set nicer colours!
     /** Array of 'nice' brown colours, matching box textures. */
-    std::vector<Vec3f> browns = {Vec3f{25, 17, 9}/255, Vec3f{20, 12, 8}/255,
-                                 Vec3f{20, 12, 0}/255, Vec3f{28, 19, 16}/255,
-                                 Vec3f{30, 21, 9}/255};
+    std::vector<Vec3f> browns = {Vec3f{25, 17, 9} / 255.f, Vec3f{20, 12, 8} / 255.f,
+                                 Vec3f{20, 12, 0} / 255.f, Vec3f{28, 19, 16} / 255.f,
+                                 Vec3f{30, 21, 9} / 255.f};
 
     /** Array of 'browns' of colours that will colour each 'log' cylinder in the raft's base. */
     int* baseLogColours;
+
+    // Texture IDs of log textures
+    int logTexId, logEndTexId;
 
     // Private draw methods for component shapes.
     void drawLog(float radius, float length, Vec3f colr) const;
